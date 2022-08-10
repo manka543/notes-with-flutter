@@ -157,7 +157,11 @@ packages:
       name: path_provider_android
       url: "https://pub.dartlang.org"
     source: hosted
+<<<<<<< HEAD
     version: "2.0.17"
+=======
+    version: "2.0.18"
+>>>>>>> 0067d89 (some stuff in notes_service)
   path_provider_ios:
     dependency: transitive
     description:
