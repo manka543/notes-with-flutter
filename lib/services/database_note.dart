@@ -8,4 +8,5 @@ class DataBaseNote {
   final DateTime rememberdate;
 
   DataBaseNote(this.text, this.title, this.icon, this.date, this.rememberdate);
+
 }
