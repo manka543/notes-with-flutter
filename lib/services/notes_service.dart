@@ -115,7 +115,7 @@ class NotesService {
         note.text,
         note.date.toString(),
         note.rememberdate.toString(),
-        note.icon,
+        note.iconData,
         note.id
       ],
     );

@@ -18,23 +18,19 @@ class _NotesState extends State<Notes> {
         ),
         body: DraggableScrollableSheet(
             builder: (BuildContext context, ScrollController scrollController) {
-          return Container(
-            child: ListView.builder(
-                controller: scrollController,
-                itemCount: 10,
-                itemBuilder: (BuildContext context, int index) {
-                  return Note(
-                      databasenote: DataBaseNote(
-                          "nothing special is in me",
-                          "nth special",
-                          const Icon(
-                            Icons.abc,
-                            size: 40,
-                          ),
-                          DateTime.now(),
-                          DateTime.now()));
-                }),
-          );
+          return ListView.builder(
+              controller: scrollController,
+              itemCount: 10,
+              itemBuilder: (BuildContext context, int index) {
+                return Note(
+                    databasenote: DataBaseNote(
+                        "nothing special is in me",
+                        "nth special",
+                        Icons.abc,
+                        DateTime.now(),
+                        DateTime.now(),
+                        null));
+              });
         }));
   }
 }

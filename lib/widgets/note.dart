@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:notes/services/database_note.dart';
-
 class Note extends StatelessWidget {
   final DataBaseNote databasenote;
 
@@ -8,7 +7,6 @@ class Note extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     return Padding(
       padding: const EdgeInsets.all(10),
       child: ListTile(
@@ -16,15 +14,13 @@ class Note extends StatelessWidget {
         tileColor: Colors.grey,
         title: Text(databasenote.title),
         subtitle: Text(databasenote.text),
-        leading: databasenote.icon,
+        leading: Icon(databasenote.iconData),
         trailing: IconButton(
           onPressed: () {},
           icon: const Icon(Icons.delete),
         ),
       ),
     );
-=======
-    return Placeholder(color: Colors.red,strokeWidth: 45,child: IconButton(onPressed: (){},icon:const Icon(Icons.error),));
->>>>>>> 072db34 (notes service)
+
   }
 }
