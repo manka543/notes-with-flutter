@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:notes/services/database_note.dart';
 import 'package:notes/widgets/note.dart';
 
 class Notes extends StatefulWidget {
@@ -13,6 +12,17 @@ class Notes extends StatefulWidget {
 class _NotesState extends State<Notes> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Note()),);
+    return Scaffold( appBar: AppBar(title: const Text("notes"),),
+      body: DraggableScrollableSheet(
+        builder:(BuildContext context, ScrollController scrollController){
+          return Container(
+            child: ListView.builder(
+              controller: scrollController,
+              itemCount: 10,
+              itemBuilder: (BuildContext context, int index){
+                return Note(databasenote: DataBaseNote("nothing special is in me", "nth special", const Icon(Icons.abc, size: 40,), DateTime.now(), DateTime.now()));
+        }), 
+        );
+  }));
   }
 }
