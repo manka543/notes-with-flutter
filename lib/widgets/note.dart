@@ -8,6 +8,7 @@ class Note extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     return Padding(
       padding: const EdgeInsets.all(10),
       child: ListTile(
@@ -22,5 +23,8 @@ class Note extends StatelessWidget {
         ),
       ),
     );
+=======
+    return Placeholder(color: Colors.red,strokeWidth: 45,child: IconButton(onPressed: (){},icon:const Icon(Icons.error),));
+>>>>>>> 072db34 (notes service)
   }
 }
