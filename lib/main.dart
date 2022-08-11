@@ -15,9 +15,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData.dark(),
-      routes:{
-        addOrEditNoteViewRoute :(context) => const addOrEditNote(),
-        notesRoute: (context) => const Notes(), 
+      routes: {
+        addOrEditNoteViewRoute: (context) => const addOrEditNote(),
+        notesRoute: (context) => const Notes(),
       },
       home: const Notes(),
     );

@@ -11,13 +11,16 @@ class Note extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(10),
       child: ListTile(
-        shape:  RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         tileColor: Colors.grey,
         title: Text(databasenote.title),
         subtitle: Text(databasenote.text),
         leading: databasenote.icon,
-        trailing: IconButton(onPressed: (){},icon: const Icon(Icons.delete),),
+        trailing: IconButton(
+          onPressed: () {},
+          icon: const Icon(Icons.delete),
+        ),
       ),
-    );  
+    );
   }
 }
