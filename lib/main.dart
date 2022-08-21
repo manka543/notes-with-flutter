@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notes/views/add_or_edit_note_view.dart';
 import 'const/routes.dart';
-import 'views/notes.dart';
+import 'views/notes/notes.dart';
 
 void main() {
   runApp(const MyApp());
