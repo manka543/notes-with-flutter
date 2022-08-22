@@ -3,12 +3,13 @@ import 'package:notes/services/database_note.dart';
 
 @immutable
 abstract class NotesState {
-  final List<DataBaseNote>? _notes;
-  const NotesState(this._notes);
+  final List<DataBaseNote>? notes;
+  const NotesState(this.notes);
 }
 
 class NotesStateValid extends NotesState {
   const NotesStateValid(super.notes);
+  
 }
 
 class NotesStateError extends NotesState {
@@ -19,4 +20,8 @@ class NotesStateError extends NotesState {
 
 class NotesLoadingState extends NotesState {
   const NotesLoadingState(super.notes);
+}
+
+class NotesInitState extends NotesState {
+  const NotesInitState(super.notes);
 }

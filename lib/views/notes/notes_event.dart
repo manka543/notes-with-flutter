@@ -11,5 +11,5 @@ class GetAllNotes extends NotesEvent {
 
 class DeleteNote extends NotesEvent {
   final int id;
-  const  DeleteNote(this.id);
+  const DeleteNote(this.id);
 }
