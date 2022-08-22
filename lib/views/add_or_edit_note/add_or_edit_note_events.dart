@@ -18,3 +18,8 @@ class EditNoteEvent extends AddOrEditNoteEvent {
 class DeleteNoteEvent extends AddOrEditNoteEvent {
   const DeleteNoteEvent(super.note);
 }
+
+class GetNoteEvent extends AddOrEditNoteEvent {
+  const GetNoteEvent(super.note);
+  
+}

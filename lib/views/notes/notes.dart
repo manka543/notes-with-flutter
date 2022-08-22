@@ -5,7 +5,6 @@ import 'package:notes/services/database_note.dart';
 import 'package:notes/views/notes/notes_bloc.dart';
 import 'package:notes/views/notes/notes_event.dart';
 import 'package:notes/widgets/note.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'notes_state.dart';
 
@@ -25,7 +24,7 @@ class _NotesState extends State<Notes> {
           appBar: AppBar(
             title: const Text("notes"),
             leading: IconButton(
-              icon: const Icon(Icons.note),
+              icon: const Icon(Icons.note_add),
               onPressed: () {
                 Navigator.of(context).pushNamed(
                     addOrEditNoteViewRoute,);

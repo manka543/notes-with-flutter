@@ -5,7 +5,6 @@ import 'views/notes/notes.dart';
 
 void main() async {
   runApp(const MyApp());
-  print(DateTime.now());
 }
 
 class MyApp extends StatelessWidget {
