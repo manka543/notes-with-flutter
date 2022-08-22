@@ -1,1 +1,1 @@
-enum NoteMenuAction { edit, delete}
+enum NoteMenuAction { edit, delete }

@@ -27,7 +27,8 @@ class _NotesState extends State<Notes> {
               icon: const Icon(Icons.note_add),
               onPressed: () {
                 Navigator.of(context).pushNamed(
-                    addOrEditNoteViewRoute,);
+                  addOrEditNoteViewRoute,
+                );
               },
             ),
           ),

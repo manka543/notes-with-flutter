@@ -27,7 +27,6 @@ class NotesService {
       throw UnableToGetDocumentDirectory;
     }
     _notes = await getallNotes();
-    
   }
 
   Future<void> _ensureDatabaseOpen() async {
@@ -60,16 +59,16 @@ class NotesService {
   Future<List<DataBaseNote>> getallNotes() async {
     await _ensureDatabaseOpen();
     final database = getDatabase();
-    final rawNotes =  await database.rawQuery("SELECT * FROM $table");
+    final rawNotes = await database.rawQuery("SELECT * FROM $table");
     List<DataBaseNote> notes = [];
     for (var rawNote in rawNotes) {
       notes.add(DataBaseNote(
-        rawNote[title].toString(),
-        rawNote[text].toString(),
-        toIcon(rawNote[icon].toString()),
-        DateTime.parse(rawNote[date].toString()),
-        DateTime.parse(rawNote[rememberDate].toString()),
-        int.parse([noteid].toString())));
+          rawNote[title].toString(),
+          rawNote[text].toString(),
+          toIcon(rawNote[icon].toString()),
+          DateTime.parse(rawNote[date].toString()),
+          DateTime.parse(rawNote[rememberDate].toString()),
+          int.parse([noteid].toString())));
     }
     return notes;
   }
@@ -79,7 +78,7 @@ class NotesService {
     final database = getDatabase();
     final rawNotes =
         await database.rawQuery("SELECT * FROM $table WHERE $noteid = $id ");
-    if(rawNotes.isEmpty){
+    if (rawNotes.isEmpty) {
       throw CouldNotFoundNoteException();
     }
     final rawNote = rawNotes[0];

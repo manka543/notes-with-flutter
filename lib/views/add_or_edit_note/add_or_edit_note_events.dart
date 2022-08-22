@@ -21,5 +21,4 @@ class DeleteNoteEvent extends AddOrEditNoteEvent {
 
 class GetNoteEvent extends AddOrEditNoteEvent {
   const GetNoteEvent(super.note);
-  
 }

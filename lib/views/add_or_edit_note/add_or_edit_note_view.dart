@@ -21,11 +21,11 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
           title: const Text("Note"),
         ),
         body: BlocConsumer<AddOrEditNoteBloc, AddOrEditNoteState>(
-          listener:  (context, state) {
-              context.read<AddOrEditNoteBloc>().add(const GetNoteEvent(null));
-            },
+          listener: (context, state) {
+            context.read<AddOrEditNoteBloc>().add(const GetNoteEvent(null));
+          },
           builder: (context, state) {
-            if(state is AddOrEditNoteInitialState){
+            if (state is AddOrEditNoteInitialState) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is AddOrEditNoteStateValid) {
               return const Text("add or edit state valid");

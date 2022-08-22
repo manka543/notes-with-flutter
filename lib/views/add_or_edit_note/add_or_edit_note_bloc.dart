@@ -7,14 +7,20 @@ class AddOrEditNoteBloc extends Bloc<AddOrEditNoteEvent, AddOrEditNoteState> {
     on<AddNoteEvent>((event, emit) {
       emit(const AddOrEditNoteStateValid(null));
     });
-    on<GetNoteEvent>((event, emit) {
-      emit(const AddOrEditNoteStateError(null));
-    },);
-    on<EditNoteEvent>((event, emit) {
-      emit(const AddOrEditNoteStateValid(null));
-    },);
-    on<DeleteNoteEvent>((event, emit) {
-      emit(const AddOrEditNoteStateValid(null));
-    },);
+    on<GetNoteEvent>(
+      (event, emit) {
+        emit(const AddOrEditNoteStateError(null));
+      },
+    );
+    on<EditNoteEvent>(
+      (event, emit) {
+        emit(const AddOrEditNoteStateValid(null));
+      },
+    );
+    on<DeleteNoteEvent>(
+      (event, emit) {
+        emit(const AddOrEditNoteStateValid(null));
+      },
+    );
   }
 }

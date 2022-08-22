@@ -9,7 +9,6 @@ abstract class NotesState {
 
 class NotesStateValid extends NotesState {
   const NotesStateValid(super.notes);
-  
 }
 
 class NotesStateError extends NotesState {

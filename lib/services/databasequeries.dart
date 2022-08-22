@@ -1,5 +1,4 @@
-const createNotesTable = 
-"""CREATE TABLE IF NOT EXISTS "notes" (
+const createNotesTable = """CREATE TABLE IF NOT EXISTS "notes" (
 	"ID"	INTEGER NOT NULL UNIQUE,
 	"Title"	TEXT,
 	"Text"	TEXT,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:notes/services/database_note.dart';
+
 class Note extends StatelessWidget {
   final DataBaseNote databasenote;
 
@@ -21,6 +22,5 @@ class Note extends StatelessWidget {
         ),
       ),
     );
-
   }
 }
