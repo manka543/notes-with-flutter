@@ -8,12 +8,17 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class NotesService {
+
+  static final NotesService _shared = NotesService._sharedInstance();
+  NotesService._sharedInstance();
+  factory NotesService() => _shared;
+
+
   late final String dataBasePath;
   Database? _database;
   static String dbname = "databasenote.db";
   List<DataBaseNote?>? _notes;
 
-  NotesService();
 
   Future<void> open() async {
     if (_database != null) {
@@ -25,8 +30,10 @@ class NotesService {
       final database = await openDatabase(dataBasePath);
       _database = database;
       await _database?.execute(createNotesTable);
-      //await createNote(note: DataBaseNote("text", "title", Icons.share, DateTime.now(), DateTime.now(), null));
-      _notes = await getallNotes();
+      //final czysieudalo = await _database?.rawInsert(""" INSERT INTO $table($title,$text,$date,$rememberDate,$icon) VALUES("testitle","testext","2022-08-22 15:02","2022-08-23 15:02","share") """);
+      //if(czysieudalo == 1){
+      //  print("udalo sie");
+      //}
     } on MissingPlatformDirectoryException {
       throw UnableToGetDocumentDirectory;
     }

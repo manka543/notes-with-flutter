@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DataBaseNote {
-  final int? id;
+  final int id;
   final String text;
   final String title;
   final IconData iconData;

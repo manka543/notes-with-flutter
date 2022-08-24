@@ -38,7 +38,9 @@ class _NotesState extends State<Notes> {
             },
             builder: (context, state) {
               if (state is NotesStateValid) {
-                return DraggableScrollableSheet(builder:
+                return DraggableScrollableSheet(initialChildSize: 1,
+                minChildSize: 1,
+                  builder:
                     (BuildContext context, ScrollController scrollController) {
                   return ListView.builder(
                       controller: scrollController,
@@ -48,10 +50,10 @@ class _NotesState extends State<Notes> {
                             databasenote: DataBaseNote(
                                 state.notes![index].text,
                                 state.notes![index].title,
-                                Icons.abc,
-                                DateTime.now(),
-                                DateTime.now(),
-                                null));
+                                state.notes![index].iconData,
+                                state.notes![index].date,
+                                state.notes![index].rememberdate,
+                                state.notes![index].id));
                       });
                 });
               } else if (state is NotesStateError) {

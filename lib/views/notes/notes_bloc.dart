@@ -10,7 +10,6 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       (event, emit) async {
         try {
           final NotesService notesService = NotesService();
-          notesService.open();
           final notes = await notesService.getallNotes();
           emit(NotesStateValid(
             notes,
@@ -23,8 +22,8 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
     );
     on<DeleteNote>(
       (event, emit) async {
+        print("usuwanie notatki o id: "+ event.id.toString());
         final NotesService notesService = NotesService();
-        await notesService.open();
         try {
           await notesService.deleteNote(id: event.id);
         } on CouldNotDeleteException {
