@@ -50,9 +50,9 @@ class _NotesState extends State<Notes> {
                             databasenote: DataBaseNote(
                                 state.notes![index].text,
                                 state.notes![index].title,
-                                state.notes![index].iconData,
+                                state.notes![index].icon,
                                 state.notes![index].date,
-                                state.notes![index].rememberdate,
+                                state.notes?[index].rememberdate,
                                 state.notes![index].id));
                       });
                 });

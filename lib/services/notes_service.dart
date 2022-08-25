@@ -76,10 +76,10 @@ class NotesService {
       notes.add(DataBaseNote(
           rawNote[title].toString(),
           rawNote[text].toString(),
-          toIcon(rawNote[icon].toString()),
+          rawNote[icon].toString(),
           DateTime.parse(rawNote[date].toString()),
-          DateTime.parse(rawNote[rememberDate].toString()),
-          int.parse([noteid].toString())));
+          DateTime.tryParse(rawNote[rememberDate].toString()),
+          int.parse(rawNote[noteid].toString())));
     }
     return notes;
   }
@@ -96,13 +96,13 @@ class NotesService {
     return DataBaseNote(
         rawNote[title].toString(),
         rawNote[text].toString(),
-        toIcon(rawNote[icon].toString()),
+        rawNote[icon].toString(),
         DateTime.parse(rawNote[date].toString()),
-        DateTime.parse(rawNote[rememberDate].toString()),
-        int.parse([noteid].toString()));
+        DateTime.tryParse(rawNote[rememberDate].toString()),
+        int.parse(rawNote[noteid].toString()));
   }
 
-  Future<void> updateNote({required DataBaseNote note}) async {
+  Future<DataBaseNote> updateNote({required DataBaseNote note}) async {
     await _ensureDatabaseOpen();
     final database = getDatabase();
     final updateCount = await database.rawUpdate(
@@ -113,9 +113,10 @@ class NotesService {
       throw CouldNotUpdateNoteException();
     }
     _notes = await getallNotes();
+    return await getNote(id: note.id!);
   }
 
-  Future<void> createNote({required DataBaseNote note}) async {
+  Future<DataBaseNote> createNote({required DataBaseNote note}) async {
     await _ensureDatabaseOpen();
     final database = getDatabase();
     final insertCount = await database.rawInsert(
@@ -125,13 +126,14 @@ class NotesService {
         note.text,
         note.date.toString(),
         note.rememberdate.toString(),
-        note.iconData,
+        note.icon,
       ],
     );
     if (insertCount != 1) {
-      throw CouldNotCreateNoteException();
+      //throw CouldNotCreateNoteException();
     }
     _notes = await getallNotes();
+    return await getNote(id: insertCount);
   }
 
   Future<void> deleteNote({required int id}) async {

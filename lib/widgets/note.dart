@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/services/database_note.dart';
+import 'package:notes/services/to_icon.dart';
 
 import '../views/notes/notes_bloc.dart';
 import '../views/notes/notes_event.dart';
@@ -18,10 +19,10 @@ class Note extends StatelessWidget {
         tileColor: Colors.grey,
         title: Text(databasenote.title),
         subtitle: Text(databasenote.text),
-        leading: Icon(databasenote.iconData, size: 42,),
+        leading: Icon(toIcon(databasenote.icon), size: 42,),
         trailing: IconButton(
           onPressed: () {
-            context.read<NotesBloc>().add(DeleteNote(databasenote.id));
+            context.read<NotesBloc>().add(DeleteNote(databasenote.id!));
           },
           icon: const Icon(Icons.delete),
         ),

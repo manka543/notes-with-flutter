@@ -1,13 +1,16 @@
-import 'package:flutter/material.dart';
-
 class DataBaseNote {
-  final int id;
+  final int? id;
   final String text;
   final String title;
-  final IconData iconData;
+  final String icon;
   final DateTime date;
-  final DateTime rememberdate;
+  final DateTime? rememberdate;
 
-  DataBaseNote(this.text, this.title, this.iconData, this.date,
+  DataBaseNote(this.text, this.title, this.icon, this.date,
       this.rememberdate, this.id);
+
+  @override
+  String toString(){
+    return("Instance of DataBaseNote; ID: $id, TITLE: $title, TEXT: $text, IconData: $icon, Date: $date, RememberDate: $rememberdate");
+  }
 }

@@ -7,10 +7,6 @@ abstract class AddOrEditNoteEvent {
   const AddOrEditNoteEvent(this.note);
 }
 
-class AddNoteEvent extends AddOrEditNoteEvent {
-  const AddNoteEvent(super.note);
-}
-
 class EditNoteEvent extends AddOrEditNoteEvent {
   const EditNoteEvent(super.note);
 }
@@ -19,6 +15,9 @@ class DeleteNoteEvent extends AddOrEditNoteEvent {
   const DeleteNoteEvent(super.note);
 }
 
-class GetNoteEvent extends AddOrEditNoteEvent {
-  const GetNoteEvent(super.note);
+class CreateEmptyNoteEvent extends AddOrEditNoteEvent {
+  
+  
+  const CreateEmptyNoteEvent() : super(null);
+
 }
