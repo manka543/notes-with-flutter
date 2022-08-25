@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:notes/services/database_note.dart';
 import 'package:notes/services/databasequeries.dart';
 import 'package:notes/services/notes_service_exeptions.dart';
 import 'package:notes/services/to_icon.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -19,14 +21,16 @@ class NotesService {
     }
     try {
       final appDir = await getApplicationDocumentsDirectory();
-      final dataBasePath = appDir.path + dbname;
+      final dataBasePath = join(appDir.path, dbname);
       final database = await openDatabase(dataBasePath);
       _database = database;
       await _database?.execute(createNotesTable);
+      //await createNote(note: DataBaseNote("text", "title", Icons.share, DateTime.now(), DateTime.now(), null));
+      _notes = await getallNotes();
     } on MissingPlatformDirectoryException {
       throw UnableToGetDocumentDirectory;
     }
-    _notes = await getallNotes();
+    
   }
 
   Future<void> _ensureDatabaseOpen() async {
@@ -108,14 +112,13 @@ class NotesService {
     await _ensureDatabaseOpen();
     final database = getDatabase();
     final insertCount = await database.rawInsert(
-      "INSERT INTO $table($title,$text,$date,$rememberDate,$icon) VALUES(?,?,?,?,?) WHERE $noteid = ?",
+      "INSERT INTO $table($title,$text,$date,$rememberDate,$icon) VALUES(?,?,?,?,?)",
       [
         note.title,
         note.text,
         note.date.toString(),
         note.rememberdate.toString(),
         note.iconData,
-        note.id
       ],
     );
     if (insertCount != 1) {

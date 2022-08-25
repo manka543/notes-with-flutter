@@ -16,6 +16,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
             notes,
           ));
         } catch (exception) {
+          print(exception);
           emit(const NotesStateError(null, null, null));
         }
       },
