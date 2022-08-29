@@ -4,7 +4,7 @@ class DataBaseNote {
   final String title;
   final String icon;
   final DateTime date;
-  final DateTime? rememberdate;
+  late final DateTime? rememberdate;
 
   DataBaseNote(this.text, this.title, this.icon, this.date,
       this.rememberdate, this.id);

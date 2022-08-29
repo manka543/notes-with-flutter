@@ -18,7 +18,7 @@ class Note extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         tileColor: Colors.grey,
         title: Text(databasenote.title),
-        subtitle: Text(databasenote.text),
+        subtitle: Text(databasenote.text + databasenote.id.toString()),
         leading: Icon(toIcon(databasenote.icon), size: 42,),
         trailing: IconButton(
           onPressed: () {

@@ -32,8 +32,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
               CouldNotDeleteException(),
               "there was an error with deleting your note"));
         }
-        final notes = await notesService.getallNotes();
-        emit(NotesStateValid(notes));
+        emit(NotesStateValid(await notesService.getallNotes()));
       },
     );
   }

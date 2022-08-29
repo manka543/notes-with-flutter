@@ -9,9 +9,11 @@ class AddOrEditNoteBloc extends Bloc<AddOrEditNoteEvent, AddOrEditNoteState> {
   AddOrEditNoteBloc() : super(const AddOrEditNoteInitialState(null)) {
     on<EditNoteEvent>(
       (event, emit) async{
+        print("I'm here too");
         final notesService = NotesService();
         try{
         final DataBaseNote editednote = await notesService.updateNote(note: event.note!);
+        print(editednote);
         emit(AddOrEditNoteStateValid(editednote));
       } on CouldNotCreateNoteException {
         emit(const AddOrEditNoteStateError(null));

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/const/routes.dart';
 import 'package:notes/services/database_note.dart';
+import 'package:notes/views/add_or_edit_note/add_or_edit_note_events.dart';
 import 'package:notes/views/notes/notes_bloc.dart';
 import 'package:notes/views/notes/notes_event.dart';
 import 'package:notes/widgets/note.dart';
@@ -25,17 +26,21 @@ class _NotesState extends State<Notes> {
             title: const Text("notes"),
             leading: IconButton(
               icon: const Icon(Icons.note_add),
-              onPressed: () {
-                Navigator.of(context).pushNamed(
-                  addOrEditNoteViewRoute,
+              onPressed: () async {
+                final note = await Navigator.of(context).pushNamedAndRemoveUntil(
+                  addOrEditNoteViewRoute,(context) => false,
                 );
+                if(!mounted) return;
+                if(note is DataBaseNote){
+                  BlocProvider.of<NotesBloc>(context).add(AddNote(note.id!));
+                }
               },
             ),
           ),
           body: BlocConsumer<NotesBloc, NotesState>(
             listener: (context, state) {
-              context.read<NotesBloc>().add(const GetAllNotes());
-            },
+              //do nothing
+              },
             builder: (context, state) {
               if (state is NotesStateValid) {
                 return DraggableScrollableSheet(initialChildSize: 1,

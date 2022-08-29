@@ -13,3 +13,8 @@ class DeleteNote extends NotesEvent {
   final int id;
   const DeleteNote(this.id);
 }
+
+class AddNote extends NotesEvent {
+  final int id;
+  const AddNote(this.id);
+}
