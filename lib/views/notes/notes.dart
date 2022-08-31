@@ -17,6 +17,9 @@ class Notes extends StatefulWidget {
 }
 
 class _NotesState extends State<Notes> {
+  DataBaseNote? noteToCreate;
+  DataBaseNote? noteToUpdate;
+  DataBaseNote? noteToDelete;
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -27,12 +30,13 @@ class _NotesState extends State<Notes> {
             leading: IconButton(
               icon: const Icon(Icons.note_add),
               onPressed: () async {
-                final note = await Navigator.of(context).pushNamedAndRemoveUntil(
-                  addOrEditNoteViewRoute,(context) => false,
-                );
-                if(!mounted) return;
-                if(note is DataBaseNote){
-                  BlocProvider.of<NotesBloc>(context).add(AddNote(note.id!));
+                final note = await Navigator.of(context).pushNamed(
+                  addOrEditNoteViewRoute,
+                ) as DataBaseNote?;
+                if(note != null){
+                  setState(() {
+                    noteToCreate = note;
+                  });
                 }
               },
             ),
@@ -42,6 +46,18 @@ class _NotesState extends State<Notes> {
               //do nothing
               },
             builder: (context, state) {
+              if (noteToCreate != null){
+                context.read<NotesBloc>().add(AddNote(noteToCreate!));
+                noteToCreate = null;
+              }
+              if (noteToUpdate != null){
+                context.read<NotesBloc>().add(UpdateNote(noteToUpdate!));
+                noteToUpdate = null;
+              }
+              if (noteToDelete != null){
+                context.read<NotesBloc>().add(DeleteNote(noteToDelete!.id!));
+                noteToDelete = null;
+              }
               if (state is NotesStateValid) {
                 return DraggableScrollableSheet(initialChildSize: 1,
                 minChildSize: 1,

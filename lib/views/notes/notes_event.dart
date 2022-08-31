@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:notes/services/database_note.dart';
 
 @immutable
 abstract class NotesEvent {
@@ -15,6 +16,11 @@ class DeleteNote extends NotesEvent {
 }
 
 class AddNote extends NotesEvent {
-  final int id;
-  const AddNote(this.id);
+  final DataBaseNote note;
+  const AddNote(this.note);
+}
+
+class UpdateNote extends NotesEvent {
+  final DataBaseNote note;
+  const UpdateNote(this.note);
 }

@@ -35,5 +35,35 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
         emit(NotesStateValid(await notesService.getallNotes()));
       },
     );
+    on<AddNote>(
+      (event, emit) async {
+        print("dodawanie notatki o tytule ${event.note.title}");
+        final NotesService notesService = NotesService();
+        try {
+          await notesService.createNote(note: event.note);
+        } on CouldNotDeleteException {
+          emit(NotesStateError(
+              await notesService.getallNotes(),
+              CouldNotDeleteException(),
+              "there was an error with deleting your note"));
+        }
+        emit(NotesStateValid(await notesService.getallNotes()));
+      },
+    );
+    on<UpdateNote>(
+      (event, emit) async {
+        print("updatowanie notatki o id: ${event.note.id}");
+        final NotesService notesService = NotesService();
+        try {
+          await notesService.updateNote(note: event.note);
+        } on CouldNotDeleteException {
+          emit(NotesStateError(
+              await notesService.getallNotes(),
+              CouldNotDeleteException(),
+              "there was an error with deleting your note"));
+        }
+        emit(NotesStateValid(await notesService.getallNotes()));
+      },
+    );
   }
 }
