@@ -37,7 +37,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
     return WillPopScope(
       onWillPop: ((){
         Navigator.pop(
-      context, DataBaseNote(_textController.text, _textController.text, "thermostat_auto", DateTime.now(), rememberDate, null)
+      context, DataBaseNote(_textController.text, _titleController.text, "thermostat_auto", DateTime.now(), rememberDate, null)
       );
       return Future.value(false);
       }),

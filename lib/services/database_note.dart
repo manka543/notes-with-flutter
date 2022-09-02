@@ -6,7 +6,7 @@ class DataBaseNote {
   final DateTime date;
   late final DateTime? rememberdate;
 
-  DataBaseNote(this.text, this.title, this.icon, this.date,
+  DataBaseNote(this.title, this.text, this.icon, this.date,
       this.rememberdate, this.id);
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/services/database_note.dart';
+import 'package:notes/services/notification_service.dart';
 import 'package:notes/services/to_icon.dart';
 
 import '../views/notes/notes_bloc.dart';
@@ -19,7 +20,12 @@ class Note extends StatelessWidget {
         tileColor: Colors.grey,
         title: Text(databasenote.title),
         subtitle: Text(databasenote.text + databasenote.id.toString()),
-        leading: Icon(toIcon(databasenote.icon), size: 42,),
+        leading: IconButton(icon: Icon(toIcon(databasenote.icon), size: 42,),
+        onPressed: () {
+          final notificationService = NotificationService();
+          //notificationService.ensureInitializaed();
+          notificationService.showNotification(id: databasenote.id!, title: databasenote.title, text: databasenote.text);
+        },),
         trailing: IconButton(
           onPressed: () {
             context.read<NotesBloc>().add(DeleteNote(databasenote.id!));

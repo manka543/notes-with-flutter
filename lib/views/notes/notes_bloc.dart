@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/services/notes_service.dart';
 import 'package:notes/services/notes_service_exeptions.dart';
+import 'package:notes/services/notification_service.dart';
 import 'package:notes/views/notes/notes_event.dart';
 import 'package:notes/views/notes/notes_state.dart';
 
@@ -40,8 +41,12 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
         print("dodawanie notatki o tytule ${event.note.title}");
         final NotesService notesService = NotesService();
         try {
-          await notesService.createNote(note: event.note);
-        } on CouldNotDeleteException {
+          final note = await notesService.createNote(note: event.note);
+          if(note.rememberdate != null){
+            final notificationService = NotificationService();
+            notificationService.showScheduledNotification(id: note.id!, title: note.title, text: note.text, date: note.rememberdate!);
+          }
+        } on CouldNotCreateNoteException {
           emit(NotesStateError(
               await notesService.getallNotes(),
               CouldNotDeleteException(),
@@ -55,7 +60,12 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
         print("updatowanie notatki o id: ${event.note.id}");
         final NotesService notesService = NotesService();
         try {
-          await notesService.updateNote(note: event.note);
+          final note = await notesService.updateNote(note: event.note);
+          if(note.rememberdate != null){
+            final notificationService = NotificationService();
+            notificationService.cancelSheduledNotification(id: note.id!);
+            notificationService.showScheduledNotification(id: note.id!, title: note.title, text: note.text, date: note.rememberdate!);
+          }
         } on CouldNotDeleteException {
           emit(NotesStateError(
               await notesService.getallNotes(),
