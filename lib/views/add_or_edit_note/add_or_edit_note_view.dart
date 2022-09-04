@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:notes/fuctions/date_time_to_string.dart';
 import 'package:notes/services/database_note.dart';
+
 class AddOrEditNoteView extends StatefulWidget {
   const AddOrEditNoteView({Key? key}) : super(key: key);
 
@@ -28,18 +30,20 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
     super.dispose();
   }
 
-  String dateTimeToString(DateTime dateTime) {
-    return "${dateTime.day}/${dateTime.month}/${dateTime.year} at ${dateTime.hour}:${dateTime.minute}";
-  }
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: ((){
-        Navigator.pop(
-      context, DataBaseNote(_textController.text, _titleController.text, "thermostat_auto", DateTime.now(), rememberDate, null)
-      );
-      return Future.value(false);
+      onWillPop: (() {
+        if (_titleController.text == "" && _textController.text == "") {
+          Navigator.pop(context, null);
+        } else {
+          Navigator.pop(
+            context,
+            DataBaseNote(_textController.text, _titleController.text,
+                "thermostat_auto", DateTime.now(), rememberDate, null),
+          );
+        }
+        return Future.value(false);
       }),
       child: Scaffold(
         appBar: AppBar(
@@ -99,7 +103,8 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                           context: context,
                           initialDate: rememberDate!,
                           firstDate: DateTime.now(),
-                          lastDate: DateTime.now().add(const Duration(days: 365)),
+                          lastDate:
+                              DateTime.now().add(const Duration(days: 365)),
                         );
                         if (date != null) {
                           setState(() {
