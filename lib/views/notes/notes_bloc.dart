@@ -27,6 +27,8 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
         final NotesService notesService = NotesService();
         try {
           await notesService.deleteNote(id: event.id);
+          final notificationService = NotificationService();
+          notificationService.cancelSheduledNotification(id: event.id);
         } on CouldNotDeleteException {
           emit(NotesStateError(
               await notesService.getallNotes(),

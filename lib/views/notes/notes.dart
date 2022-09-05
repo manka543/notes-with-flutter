@@ -5,7 +5,7 @@ import 'package:notes/services/database_note.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_events.dart';
 import 'package:notes/views/notes/notes_bloc.dart';
 import 'package:notes/views/notes/notes_event.dart';
-import 'package:notes/widgets/note.dart';
+import 'package:notes/widgets/better_better_note.dart';
 
 import 'notes_state.dart';
 
@@ -25,6 +25,13 @@ class _NotesState extends State<Notes> {
     return BlocProvider(
       create: (context) => NotesBloc(),
       child: Scaffold(
+          bottomNavigationBar: BottomNavigationBar(items: const [
+           BottomNavigationBarItem(icon: Icon(Icons.abc), label: "sie"),
+           BottomNavigationBarItem(icon: Icon(Icons.audio_file), label: "sie"),
+           BottomNavigationBarItem(icon: Icon(Icons.auto_awesome), label: "nic"),
+           BottomNavigationBarItem(icon: Icon(Icons.motion_photos_auto_rounded), label: "nie"),
+           BottomNavigationBarItem(icon: Icon(Icons.theater_comedy), label: "dzieje"),
+          ],),
           appBar: AppBar(
             title: const Text("notes"),
             leading: IconButton(

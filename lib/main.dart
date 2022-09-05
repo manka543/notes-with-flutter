@@ -14,7 +14,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData.dark(),
+      theme: ThemeData(
+          colorScheme: ColorScheme(
+        brightness: Brightness.dark,
+        primary: Colors.yellow.shade700,
+        onPrimary: Colors.black,
+        secondary: Colors.grey,
+        onSecondary: Colors.black,
+        error: Colors.red,
+        onError: Colors.black,
+        background: Colors.black26,
+        onBackground: Colors.white,
+        surface: Colors.yellow.shade700,
+        onSurface: Colors.black,
+      )),
       routes: {
         addOrEditNoteViewRoute: (context) => const AddOrEditNoteView(),
         notesRoute: (context) => const Notes(),

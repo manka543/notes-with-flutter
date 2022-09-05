@@ -119,11 +119,11 @@ class _NoteState extends State<Note> {
             child: Container(
               alignment: Alignment.centerRight,
               padding: const EdgeInsets.all(0),
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(
                   Radius.circular(15),
                 ),
-                color: Colors.blueGrey,
+                color: Theme.of(context).cardColor,
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
