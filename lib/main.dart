@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:notes/services/database_note.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_view.dart';
+import 'package:notes/widgets/pop_up_note_details.dart';
 import 'const/routes.dart';
 import 'views/notes/notes.dart';
 
@@ -17,20 +19,21 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
           colorScheme: ColorScheme(
         brightness: Brightness.dark,
-        primary: Colors.yellow.shade700,
+        primary: Colors.white,
         onPrimary: Colors.black,
         secondary: Colors.grey,
         onSecondary: Colors.black,
         error: Colors.red,
-        onError: Colors.black,
-        background: Colors.black26,
-        onBackground: Colors.white,
-        surface: Colors.yellow.shade700,
+        onError: Colors.red.shade300,
+        background: Colors.white,
+        onBackground: Colors.black26,
+        surface: Colors.yellow,
         onSurface: Colors.black,
       )),
       routes: {
         addOrEditNoteViewRoute: (context) => const AddOrEditNoteView(),
         notesRoute: (context) => const Notes(),
+        //popUpNoteDetailsRoute: (context, DataBaseNote note) => PopUpNoteDetails(),
       },
       home: const Notes(),
     );

@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/const/routes.dart';
 import 'package:notes/services/database_note.dart';
-import 'package:notes/views/add_or_edit_note/add_or_edit_note_events.dart';
 import 'package:notes/views/notes/notes_bloc.dart';
 import 'package:notes/views/notes/notes_event.dart';
-import 'package:notes/widgets/better_better_note.dart';
+import 'package:notes/widgets/best_note.dart';
 
 import 'notes_state.dart';
 
@@ -25,13 +24,36 @@ class _NotesState extends State<Notes> {
     return BlocProvider(
       create: (context) => NotesBloc(),
       child: Scaffold(
-          bottomNavigationBar: BottomNavigationBar(items: const [
-           BottomNavigationBarItem(icon: Icon(Icons.abc), label: "sie"),
-           BottomNavigationBarItem(icon: Icon(Icons.audio_file), label: "sie"),
-           BottomNavigationBarItem(icon: Icon(Icons.auto_awesome), label: "nic"),
-           BottomNavigationBarItem(icon: Icon(Icons.motion_photos_auto_rounded), label: "nie"),
-           BottomNavigationBarItem(icon: Icon(Icons.theater_comedy), label: "dzieje"),
-          ],),
+          floatingActionButton: FloatingActionButton(
+            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
+            backgroundColor: Colors.yellow,
+            child: const Icon(Icons.add),
+            onPressed: () async {
+                final note = await Navigator.of(context).pushNamed(
+                  addOrEditNoteViewRoute,
+                ) as DataBaseNote?;
+                if (note != null) {
+                  setState(() {
+                    noteToCreate = note;
+                    //ScaffoldMessenger.of(context).showSnackBar(
+                    //const SnackBar(content: Text("Note has been created")));
+                  });
+                }
+              },
+          ),
+          bottomNavigationBar: BottomNavigationBar(
+            items: const [
+              BottomNavigationBarItem(icon: Icon(Icons.abc), label: "sie"),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.audio_file), label: "sie"),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.auto_awesome), label: "nic"),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.motion_photos_auto_rounded), label: "nie"),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.theater_comedy), label: "dzieje"),
+            ],
+          ),
           appBar: AppBar(
             title: const Text("notes"),
             leading: IconButton(
@@ -43,6 +65,8 @@ class _NotesState extends State<Notes> {
                 if (note != null) {
                   setState(() {
                     noteToCreate = note;
+                    //ScaffoldMessenger.of(context).showSnackBar(
+                    //const SnackBar(content: Text("Note has been created")));
                   });
                 }
               },
@@ -56,14 +80,19 @@ class _NotesState extends State<Notes> {
               if (noteToCreate != null) {
                 context.read<NotesBloc>().add(AddNote(noteToCreate!));
                 noteToCreate = null;
+                
               }
               if (noteToUpdate != null) {
                 context.read<NotesBloc>().add(UpdateNote(noteToUpdate!));
                 noteToUpdate = null;
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Note has been updated")));
               }
               if (noteToDelete != null) {
                 context.read<NotesBloc>().add(DeleteNote(noteToDelete!.id!));
                 noteToDelete = null;
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Note has been deleted")));
               }
               if (state is NotesStateValid) {
                 return DraggableScrollableSheet(
@@ -76,9 +105,9 @@ class _NotesState extends State<Notes> {
                           itemCount: state.notes?.length,
                           itemBuilder: (BuildContext context, int index) {
                             return Note(
-                              databasenote: DataBaseNote(
-                                  state.notes![index].text,
+                              note: DataBaseNote(
                                   state.notes![index].title,
+                                  state.notes![index].text,
                                   state.notes![index].icon,
                                   state.notes![index].date,
                                   state.notes?[index].rememberdate,
