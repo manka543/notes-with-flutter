@@ -29,14 +29,14 @@ class _NotesState extends State<Notes> {
             backgroundColor: Colors.yellow,
             child: const Icon(Icons.add),
             onPressed: () async {
-                final note = await Navigator.of(context).pushNamed(
+              final note = await Navigator.of(context).pushNamed(
                   addOrEditNoteViewRoute,
                 ) as DataBaseNote?;
                 if (note != null) {
                   setState(() {
                     noteToCreate = note;
-                    //ScaffoldMessenger.of(context).showSnackBar(
-                    //const SnackBar(content: Text("Note has been created")));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                    const  SnackBar(content: Text("Note has been created", style: TextStyle(color: Colors.white),)));
                   });
                 }
               },
@@ -65,8 +65,8 @@ class _NotesState extends State<Notes> {
                 if (note != null) {
                   setState(() {
                     noteToCreate = note;
-                    //ScaffoldMessenger.of(context).showSnackBar(
-                    //const SnackBar(content: Text("Note has been created")));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Note has been created", style: TextStyle(color: Colors.white),)));
                   });
                 }
               },
@@ -80,19 +80,14 @@ class _NotesState extends State<Notes> {
               if (noteToCreate != null) {
                 context.read<NotesBloc>().add(AddNote(noteToCreate!));
                 noteToCreate = null;
-                
               }
               if (noteToUpdate != null) {
                 context.read<NotesBloc>().add(UpdateNote(noteToUpdate!));
                 noteToUpdate = null;
-                ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Note has been updated")));
               }
               if (noteToDelete != null) {
                 context.read<NotesBloc>().add(DeleteNote(noteToDelete!.id!));
                 noteToDelete = null;
-                ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Note has been deleted")));
               }
               if (state is NotesStateValid) {
                 return DraggableScrollableSheet(

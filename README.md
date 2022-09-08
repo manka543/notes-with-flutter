@@ -1,16 +1,7 @@
 # notes
 
-A new Flutter project.
+Flutter project of app which is created to keeping user's notes and sending local notification about notes in setted date and time
 
-## Getting Started
+## Known bugs
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. If you have opened note in notes view and delete note which is min 2 places above this note will be collapsed and note below will be open

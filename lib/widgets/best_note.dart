@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/fuctions/date_time_to_string.dart';
 import 'package:notes/services/database_note.dart';
 import 'package:notes/services/to_icon.dart';
+import 'package:notes/views/notes/notes_bloc.dart';
+import 'package:notes/views/notes/notes_event.dart';
 
 class Note extends StatefulWidget {
   const Note({Key? key, required this.note}) : super(key: key);
@@ -66,52 +69,66 @@ class _NoteState extends State<Note> {
                     ),
             ),
             AnimatedContainer(
-              curve: Curves.easeIn,
+              curve: Curves.fastLinearToSlowEaseIn,
               duration: const Duration(seconds: 1),
               height: selected ? 150 : 0,
               child: Container(
                 decoration: selected
-                          ? BoxDecoration(
-                              color: Theme.of(context).primaryColor,
-                              borderRadius: const BorderRadius.vertical(
-                                  bottom: Radius.circular(15)))
-                          : BoxDecoration(
-                              color: Theme.of(context).primaryColor,
-                              borderRadius: const BorderRadius.vertical(
-                              bottom: Radius.circular(15))
-                              ),
+                    ? BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: const BorderRadius.vertical(
+                            bottom: Radius.circular(15)))
+                    : BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: const BorderRadius.vertical(
+                            bottom: Radius.circular(15))),
                 child: Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Text(widget.note.title, textAlign: TextAlign.left, overflow: TextOverflow.fade,),
-                            ),
-                            ClipRect(
-                              child: Column(
-                                children: [
-                                  Expanded(
-                                    child: IconButton(
-                                        onPressed: () {},
-                                        icon: const Icon(Icons.delete)),
-                                  ),
-                                  Expanded(
-                                    child: IconButton(
-                                        onPressed: () {},
-                                        icon: const Icon(Icons.zoom_in)),
-                                  ),
-                                  Expanded(
-                                    child: IconButton(
-                                        onPressed: () {},
-                                        icon: const Icon(Icons.edit)),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
+                  padding: const EdgeInsets.all(15),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          widget.note.title,
+                          textAlign: TextAlign.left,
+                          overflow: TextOverflow.fade,
                         ),
                       ),
+                      ClipRect(
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: IconButton(
+                                  onPressed: () {
+                                    selected = false;
+                                    context
+                                        .read<NotesBloc>()
+                                        .add(DeleteNote(widget.note.id!));
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                            content: Text(
+                                      "Note has been deleted",
+                                      style: TextStyle(color: Colors.white),
+                                    )));
+                                  },
+                                  icon: const Icon(Icons.delete)),
+                            ),
+                            Expanded(
+                              child: IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(Icons.zoom_in)),
+                            ),
+                            Expanded(
+                              child: IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(Icons.edit)),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
               ),
             )
           ],
