@@ -111,12 +111,12 @@ class _NotesState extends State<Notes> {
                           itemBuilder: (BuildContext context, int index) {
                             return Note(
                               note: DataBaseNote(
-                                  state.notes![index].title,
-                                  state.notes![index].text,
-                                  state.notes![index].icon,
-                                  state.notes![index].date,
-                                  state.notes?[index].rememberdate,
-                                  state.notes![index].id),
+                                  title: state.notes![index].title,
+                                  text: state.notes![index].text,
+                                  icon: state.notes![index].icon,
+                                  date: state.notes![index].date,
+                                  rememberdate: state.notes?[index].rememberdate,
+                                  id: state.notes![index].id),
                             );
                           });
                     });

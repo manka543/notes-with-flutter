@@ -6,8 +6,8 @@ class DataBaseNote {
   final DateTime date;
   late final DateTime? rememberdate;
 
-  DataBaseNote(this.title, this.text, this.icon, this.date,
-      this.rememberdate, this.id);
+  DataBaseNote({ required this.title, required this.text, required this.icon, required this.date,
+      this.rememberdate, this.id});
 
   @override
   String toString(){

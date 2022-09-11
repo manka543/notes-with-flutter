@@ -74,12 +74,12 @@ class NotesService {
     List<DataBaseNote> notes = [];
     for (var rawNote in rawNotes) {
       notes.add(DataBaseNote(
-          rawNote[title].toString(),
-          rawNote[text].toString(),
-          rawNote[icon].toString(),
-          DateTime.parse(rawNote[date].toString()),
-          DateTime.tryParse(rawNote[rememberDate].toString()),
-          int.parse(rawNote[noteid].toString())));
+          title: rawNote[title].toString(),
+          text: rawNote[text].toString(),
+          icon: rawNote[icon].toString(),
+          date: DateTime.parse(rawNote[date].toString()),
+          rememberdate: DateTime.tryParse(rawNote[rememberDate].toString()),
+          id: int.parse(rawNote[noteid].toString())));
     }
     return notes;
   }
@@ -94,12 +94,12 @@ class NotesService {
     }
     final rawNote = rawNotes[0];
     return DataBaseNote(
-        rawNote[title].toString(),
-        rawNote[text].toString(),
-        rawNote[icon].toString(),
-        DateTime.parse(rawNote[date].toString()),
-        DateTime.tryParse(rawNote[rememberDate].toString()),
-        int.parse(rawNote[noteid].toString()));
+        title: rawNote[title].toString(),
+        text: rawNote[text].toString(),
+        icon: rawNote[icon].toString(),
+        date: DateTime.parse(rawNote[date].toString()),
+        rememberdate: DateTime.tryParse(rawNote[rememberDate].toString()),
+        id: int.parse(rawNote[noteid].toString()));
   }
 
   Future<DataBaseNote> updateNote({required DataBaseNote note}) async {
