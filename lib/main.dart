@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notes/services/database_note.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_view.dart';
+import 'package:notes/views/note_view/note_view.dart';
 import 'package:notes/widgets/pop_up_note_details.dart';
 import 'const/routes.dart';
 import 'views/notes/notes.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         addOrEditNoteViewRoute: (context) => const AddOrEditNoteView(),
         notesRoute: (context) => const Notes(),
         //popUpNoteDetailsRoute: (context, DataBaseNote note) => PopUpNoteDetails(),
+        notesViewRoute :(context, note) => NoteView(note: note,),
       },
       home: const Notes(),
     );

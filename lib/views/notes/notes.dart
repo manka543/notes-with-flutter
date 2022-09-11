@@ -25,21 +25,25 @@ class _NotesState extends State<Notes> {
       create: (context) => NotesBloc(),
       child: Scaffold(
           floatingActionButton: FloatingActionButton(
-            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
+            shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15))),
             backgroundColor: Colors.yellow,
             child: const Icon(Icons.add),
             onPressed: () async {
               final note = await Navigator.of(context).pushNamed(
-                  addOrEditNoteViewRoute,
-                ) as DataBaseNote?;
-                if (note != null) {
-                  setState(() {
-                    noteToCreate = note;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                    const  SnackBar(content: Text("Note has been created", style: TextStyle(color: Colors.white),)));
-                  });
-                }
-              },
+                addOrEditNoteViewRoute,
+              ) as DataBaseNote?;
+              if (note != null) {
+                setState(() {
+                  noteToCreate = note;
+                  // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  //     content: Text(
+                  //   "Note has been created",
+                  //   style: TextStyle(color: Colors.white),
+                  // )));
+                });
+              }
+            },
           ),
           bottomNavigationBar: BottomNavigationBar(
             items: const [
@@ -65,8 +69,14 @@ class _NotesState extends State<Notes> {
                 if (note != null) {
                   setState(() {
                     noteToCreate = note;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Note has been created", style: TextStyle(color: Colors.white),)));
+                    // ScaffoldMessenger.of(context).showSnackBar(
+                    //   const SnackBar(
+                    //     content: Text(
+                    //       "Note has been created",
+                    //       style: TextStyle(color: Colors.white),
+                    //     ),
+                    //   ),
+                    // );
                   });
                 }
               },

@@ -39,7 +39,7 @@ class _NoteState extends State<Note> {
                           padding: const EdgeInsets.all(8.0),
                           child: Icon(toIcon(widget.note.icon)),
                         ),
-                        Expanded(child: Text(widget.note.text)),
+                        Expanded(child: Hero(tag: "title",child: Text(widget.note.text))),
                         IconButton(
                           icon: const Icon(Icons.keyboard_arrow_down_outlined),
                           onPressed: () {
@@ -115,7 +115,9 @@ class _NoteState extends State<Note> {
                             ),
                             Expanded(
                               child: IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.pushNamed(context, );
+                                  },
                                   icon: const Icon(Icons.zoom_in)),
                             ),
                             Expanded(
