@@ -21,7 +21,8 @@ class PopUpNoteDetails extends PopupRoute<void> {
   String? get barrierLabel => databasenote.title;
 
   @override
-  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+  Widget buildPage(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation) {
     return Material(
       type: MaterialType.transparency,
       child: Center(
@@ -34,51 +35,54 @@ class PopUpNoteDetails extends PopupRoute<void> {
             ),
             height: 400,
             child: Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Hero(tag: "Icon", child: Icon(toIcon(databasenote.icon))),
-                            ),
-                            Expanded(
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(databasenote.title),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(databasenote.text),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text("Creation Date: ${dateTimeToString(databasenote.date)}"),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text("Remember Date: ${dateTimeToString(databasenote.rememberdate)}"),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Column(
-                              children: [
-                                IconButton(
-                                      onPressed: () {},
-                                      icon: const Icon(Icons.delete_forever_outlined),
-                                    ),
-                                IconButton(
-                                      onPressed: () {},
-                                      icon: const Icon(Icons.delete_forever_outlined),
-                                    ),
-                                IconButton(
-                                      onPressed: () {},
-                                      icon: const Icon(Icons.delete_forever_outlined),
-                                    ),
-                              ],
-                            ),
-                          ],
-                        ),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child:
+                      Hero(tag: "Icon", child: Icon(toIcon(databasenote.icon))),
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(databasenote.title),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(databasenote.text),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                            "Creation Date: ${dateTimeToString(databasenote.date)}"),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                            "Remember Date: ${dateTimeToString(databasenote.rememberdate)}"),
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  children: [
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.delete_forever_outlined),
+                    ),
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.delete_forever_outlined),
+                    ),
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.delete_forever_outlined),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -88,5 +92,4 @@ class PopUpNoteDetails extends PopupRoute<void> {
   @override
   // TODO: implement transitionDuration
   Duration get transitionDuration => const Duration(milliseconds: 10);
-
 }

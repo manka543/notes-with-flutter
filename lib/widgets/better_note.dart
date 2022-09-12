@@ -27,29 +27,34 @@ class _NoteState extends State<Note> {
     return Padding(
       padding: const EdgeInsets.all(10),
       child: GestureDetector(
-        onTap: (){
+        onTap: () {
           setState(() {
             widget.selected = !widget.selected;
           });
         },
         child: Container(
           decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
-          borderRadius: BorderRadius.circular(15),
+            color: Theme.of(context).primaryColor,
+            borderRadius: BorderRadius.circular(15),
           ),
           child: AnimatedSize(
             duration: const Duration(seconds: 1),
             curve: Curves.fastOutSlowIn,
-            child: Builder(
-              builder: (context) {
-                if (widget.selected != true){
+            child: Builder(builder: (context) {
+              if (widget.selected != true) {
                 return Row(
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: IconButton(icon: Hero(tag: "icon" ,child: Icon(toIcon(widget.databasenote.icon))), onPressed: () {
-                        Navigator.push(context, PopUpNoteDetails(widget.databasenote));
-                      },),
+                      child: IconButton(
+                        icon: Hero(
+                            tag: "icon",
+                            child: Icon(toIcon(widget.databasenote.icon))),
+                        onPressed: () {
+                          Navigator.push(
+                              context, PopUpNoteDetails(widget.databasenote));
+                        },
+                      ),
                     ),
                     Expanded(
                       child: Column(
@@ -66,18 +71,19 @@ class _NoteState extends State<Note> {
                       ),
                     ),
                     IconButton(
-                          onPressed: () {
-                            context
+                      onPressed: () {
+                        context
                             .read<NotesBloc>()
                             .add(DeleteNote(widget.databasenote.id!));
-                            ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Note has been deleted")));
-                          },
-                          icon: const Icon(Icons.delete_forever_outlined),
-                        ),
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text("Note has been deleted")));
+                      },
+                      icon: const Icon(Icons.delete_forever_outlined),
+                    ),
                   ],
                 );
-                } else {
+              } else {
                 return Row(
                   children: [
                     Padding(
@@ -97,11 +103,13 @@ class _NoteState extends State<Note> {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text("Creation Date: ${dateTimeToString(widget.databasenote.date)}"),
+                            child: Text(
+                                "Creation Date: ${dateTimeToString(widget.databasenote.date)}"),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text("Remember Date: ${dateTimeToString(widget.databasenote.rememberdate)}"),
+                            child: Text(
+                                "Remember Date: ${dateTimeToString(widget.databasenote.rememberdate)}"),
                           ),
                         ],
                       ),
@@ -109,24 +117,23 @@ class _NoteState extends State<Note> {
                     Column(
                       children: [
                         IconButton(
-                              onPressed: () {},
-                              icon: const Icon(Icons.delete_forever_outlined),
-                            ),
+                          onPressed: () {},
+                          icon: const Icon(Icons.delete_forever_outlined),
+                        ),
                         IconButton(
-                              onPressed: () {},
-                              icon: const Icon(Icons.delete_forever_outlined),
-                            ),
+                          onPressed: () {},
+                          icon: const Icon(Icons.delete_forever_outlined),
+                        ),
                         IconButton(
-                              onPressed: () {},
-                              icon: const Icon(Icons.delete_forever_outlined),
-                            ),
+                          onPressed: () {},
+                          icon: const Icon(Icons.delete_forever_outlined),
+                        ),
                       ],
                     ),
                   ],
                 );
               }
-              }
-            ),
+            }),
           ),
         ),
       ),

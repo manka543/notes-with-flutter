@@ -12,27 +12,27 @@ class NoteViewBloc extends Bloc<NoteViewEvent, NoteViewState> {
   NoteViewBloc() : super(NoteViewInitial()) {
     on<GetNoteEvent>((event, emit) async {
       try {
-          final NotesService notesService = NotesService();
-          final note = await notesService.getNote(id: event.id);
-          emit(NoteViewValid(
-            note,
-          ));
-        } catch (exception) {
-          print(exception);
-          emit(NoteViewError());
-        }
+        final NotesService notesService = NotesService();
+        final note = await notesService.getNote(id: event.id);
+        emit(NoteViewValid(
+          note,
+        ));
+      } catch (exception) {
+        print(exception);
+        emit(NoteViewError());
+      }
     });
     on<DeleteNoteEvent>((event, emit) async {
       print("usuwanie notatki o id: ${event.id}");
-        final NotesService notesService = NotesService();
-        try {
-          await notesService.deleteNote(id: event.id);
-          final notificationService = NotificationService();
-          notificationService.cancelSheduledNotification(id: event.id);
-        } on CouldNotDeleteException {
-          emit(NoteViewError());
-        }
-        emit(NoteViewExit());
+      final NotesService notesService = NotesService();
+      try {
+        await notesService.deleteNote(id: event.id);
+        final notificationService = NotificationService();
+        notificationService.cancelSheduledNotification(id: event.id);
+      } on CouldNotDeleteException {
+        emit(NoteViewError());
+      }
+      emit(NoteViewExit());
     });
   }
 }

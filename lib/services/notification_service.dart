@@ -37,11 +37,12 @@ class NotificationService {
         notificationDetails: _notificationDetails());
   }
 
-  Future<void> cancelSheduledNotification({required int id,}) async {
+  Future<void> cancelSheduledNotification({
+    required int id,
+  }) async {
     ensureInitializaed();
     await _notificationService.cancel(id);
   }
-
 
   Future<void> showScheduledNotification(
       {required int id,

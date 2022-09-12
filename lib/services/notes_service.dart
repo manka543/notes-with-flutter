@@ -8,17 +8,14 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class NotesService {
-
   static final NotesService _shared = NotesService._sharedInstance();
   NotesService._sharedInstance();
   factory NotesService() => _shared;
-
 
   late final String dataBasePath;
   Database? _database;
   static String dbname = "databasenote.db";
   List<DataBaseNote?>? _notes;
-
 
   Future<void> open() async {
     if (_database != null) {
@@ -37,7 +34,6 @@ class NotesService {
     } on MissingPlatformDirectoryException {
       throw UnableToGetDocumentDirectory;
     }
-    
   }
 
   Future<void> _ensureDatabaseOpen() async {
@@ -105,11 +101,23 @@ class NotesService {
   Future<DataBaseNote> updateNote({required DataBaseNote note}) async {
     await _ensureDatabaseOpen();
     final database = getDatabase();
-    final updateCount = await database.rawUpdate(
-      """UPDATE $table SET $title = ?, $text = ?, $rememberDate = ? WHERE $noteid = ? """,
-      [note.title, note.text, note.rememberdate.toString(), note.id],
-    );
+    final notedb = getNote(id: note.id!);
+    final updateCount = await database.update(
+        table,
+        {
+          title: note.title,
+          text: note.text,
+          rememberDate: note.rememberdate.toString(),
+          icon: note.icon,
+        },
+        where: '$noteid = ?',
+        whereArgs: [note.id]);
+    // final updateCount = await database.rawUpdate(
+    //   """UPDATE $table SET $title = ?, $text = ?, $rememberDate = ? WHERE $noteid = ? """,
+    //   [note.title, note.text, note.rememberdate.toString(), note.id],
+    // );
     if (updateCount != 1) {
+      print(updateCount);
       throw CouldNotUpdateNoteException();
     }
     _notes = await getallNotes();

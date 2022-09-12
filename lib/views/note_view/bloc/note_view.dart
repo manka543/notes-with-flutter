@@ -9,7 +9,7 @@ class NoteView extends StatefulWidget {
 }
 
 class _NoteViewState extends State<NoteView> {
-  late final int id;
+  int? id;
   @override
   Widget build(BuildContext context) {
     id = ModalRoute.of(context)!.settings.arguments as int;
@@ -18,7 +18,7 @@ class _NoteViewState extends State<NoteView> {
       child: BlocBuilder<NoteViewBloc, NoteViewState>(
         builder: (context, state) {
           if (state is NoteViewInitial) {
-            context.read<NoteViewBloc>().add(GetNoteEvent(id));
+            context.read<NoteViewBloc>().add(GetNoteEvent(id!));
             return Scaffold(
               appBar: AppBar(title: const Text("Loading")),
               body: const Center(child: CircularProgressIndicator()),
@@ -27,8 +27,20 @@ class _NoteViewState extends State<NoteView> {
             return Scaffold(
               appBar: AppBar(
                 title: Text(state.note.title),
+                actions: [
+                  IconButton(onPressed: () {}, icon: const Icon(Icons.delete)),
+                  IconButton(
+                      onPressed: () {}, icon: const Icon(Icons.more_vert)),
+                ],
               ),
-              body: Text(state.note.text),
+              body: Column(
+                children: [
+                  Text(state.note.title),
+                  Text(state.note.text),
+                  Text("date: ${state.note.date}"),
+                  Text("rememberdate: ${state.note.rememberdate}"),
+                ],
+              ),
             );
           } else if (state is NoteViewError) {
             return Scaffold(

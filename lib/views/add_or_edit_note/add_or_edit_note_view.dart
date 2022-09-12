@@ -5,6 +5,7 @@ import 'package:notes/services/database_note.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_bloc.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_events.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_states.dart';
+import 'package:notes/views/notes/notes_event.dart';
 
 class AddOrEditNoteView extends StatefulWidget {
   const AddOrEditNoteView({Key? key}) : super(key: key);
@@ -19,6 +20,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
   DateTime? rememberDate;
   String? icon;
   bool rememberDateSwich = false;
+  int? id;
 
   @override
   void initState() {
@@ -36,43 +38,60 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
 
   @override
   Widget build(BuildContext context) {
-    int? id = ModalRoute.of(context)!.settings.arguments as int?;
+    id = ModalRoute.of(context)!.settings.arguments as int? ?? id;
+    print(id);
     return BlocProvider(
       create: (context) => AddOrEditNoteBloc(),
-      child: BlocBuilder<AddOrEditNoteBloc, AddOrEditNoteState>(
-        builder: (context, state) {
-          if(id != null){
-            if(state is AddOrEditNoteInitialState){
-              context.read<AddOrEditNoteBloc>().add(GetNoteEvent(id));
-              
-            }else if (state is AddOrEditNoteStateValid){
-                _titleController.text = state.note!.title;
-                _textController.text = state.note!.text;
-                if(state.note!.rememberdate != null){
-                  rememberDate = state.note!.rememberdate;
-                  rememberDateSwich = true;
-                }
-                icon = state.note!.icon;
+      child: BlocConsumer<AddOrEditNoteBloc, AddOrEditNoteState>(
+        listener: (context, state) {
+          if (state is AddOrEditNoteInitialState) {
+            print("now i am here");
+            if (id == null) {
+              context
+                  .read<AddOrEditNoteBloc>()
+                  .add(const CreateEmptyNoteEvent());
+            } else {
+              context.read<AddOrEditNoteBloc>().add(GetNoteEvent(id!));
+            }
+          } else if (state is AddOrEditNoteStateValid) {
+            setState(() {
+              id = state.note!.id;
+              _titleController.text = state.note!.title;
+              _textController.text = state.note!.text;
+              if (state.note!.rememberdate != null) {
+                rememberDate = state.note!.rememberdate;
+                rememberDateSwich = true;
               }
+              icon = state.note!.icon;
+            });
+          } else if (state is DeletedState || state is UpdatedState) {
+            Navigator.pop(context, true);
           }
-          if(state is DeletedState){
-            Navigator.pop(context, null);
+        },
+        builder: (context, state) {
+          if (state is AddOrEditNoteInitialState) {
+            print("now i am here");
+            if (id == null) {
+              context
+                  .read<AddOrEditNoteBloc>()
+                  .add(const CreateEmptyNoteEvent());
+            } else {
+              context.read<AddOrEditNoteBloc>().add(GetNoteEvent(id!));
+            }
           }
           return WillPopScope(
             onWillPop: (() {
               if (_titleController.text == "" && _textController.text == "") {
-                Navigator.pop(context, null);
+                context.read<AddOrEditNoteBloc>().add(DeleteNoteEvent(id));
               } else {
-                Navigator.pop(
-                  context,
-                  DataBaseNote(
-                      text: _textController.text,
-                      title: _titleController.text,
-                      icon: "thermostat_auto",
-                      date: DateTime.now(),
-                      rememberdate: rememberDate,
-                      id: null),
-                );
+                final note = DataBaseNote(
+                    text: _textController.text,
+                    title: _titleController.text,
+                    icon: "thermostat_auto",
+                    date: DateTime.now(),
+                    rememberdate: rememberDate,
+                    id: id);
+                context.read<AddOrEditNoteBloc>().add(FinalEditEvent(note));
               }
               return Future.value(false);
             }),
@@ -80,10 +99,37 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
               appBar: AppBar(
                 title: const Text("Note"),
                 actions: <Widget>[
-                  IconButton(onPressed: () {
-                    context.read<AddOrEditNoteBloc>().add(DeleteNoteEvent(id));
-                  }, icon: const Icon(Icons.delete),),
+                  IconButton(
+                    onPressed: () {
+                      context
+                          .read<AddOrEditNoteBloc>()
+                          .add(DeleteNoteEvent(id));
+                    },
+                    icon: const Icon(Icons.delete),
+                  ),
                 ],
+              ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                  final note = DataBaseNote(
+                      text: _textController.text,
+                      title: _titleController.text,
+                      icon: "thermostat_auto",
+                      date: DateTime.now(),
+                      rememberdate: rememberDate,
+                      id: id);
+                  context.read<AddOrEditNoteBloc>().add(EditNoteEvent(note));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        "Note has been saved",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  );
+                },
+                backgroundColor: Colors.yellow,
+                child: const Icon(Icons.save),
               ),
               body: ListView(
                 children: [

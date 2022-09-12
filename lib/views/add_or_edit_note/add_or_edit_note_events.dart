@@ -17,14 +17,14 @@ class DeleteNoteEvent extends AddOrEditNoteEvent {
 }
 
 class CreateEmptyNoteEvent extends AddOrEditNoteEvent {
-  
-  
   const CreateEmptyNoteEvent() : super(null);
-
 }
 
 class GetNoteEvent extends AddOrEditNoteEvent {
   final int id;
-
   const GetNoteEvent(this.id) : super(null);
+}
+
+class FinalEditEvent extends AddOrEditNoteEvent {
+  const FinalEditEvent(super.note);
 }

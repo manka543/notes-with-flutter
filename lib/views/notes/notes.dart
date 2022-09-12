@@ -19,6 +19,7 @@ class _NotesState extends State<Notes> {
   DataBaseNote? noteToCreate;
   DataBaseNote? noteToUpdate;
   DataBaseNote? noteToDelete;
+  bool updated = true;
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -30,53 +31,27 @@ class _NotesState extends State<Notes> {
             backgroundColor: Colors.yellow,
             child: const Icon(Icons.add),
             onPressed: () async {
-              final note = await Navigator.of(context).pushNamed(
+              final toUpdate = await Navigator.of(context).pushNamed(
                 addOrEditNoteViewRoute,
-              ) as DataBaseNote?;
-              if (note != null) {
+              ) as bool?;
+              if (toUpdate == true) {
                 setState(() {
-                  noteToCreate = note;
-                  // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  //     content: Text(
-                  //   "Note has been created",
-                  //   style: TextStyle(color: Colors.white),
-                  // )));
+                  updated = false;
                 });
               }
             },
-          ),
-          bottomNavigationBar: BottomNavigationBar(
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.abc), label: "sie"),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.audio_file), label: "sie"),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.auto_awesome), label: "nic"),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.motion_photos_auto_rounded), label: "nie"),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.theater_comedy), label: "dzieje"),
-            ],
           ),
           appBar: AppBar(
             title: const Text("notes"),
             leading: IconButton(
               icon: const Icon(Icons.note_add),
               onPressed: () async {
-                final note = await Navigator.of(context).pushNamed(
+                final toUpdate = await Navigator.of(context).pushNamed(
                   addOrEditNoteViewRoute,
-                ) as DataBaseNote?;
-                if (note != null) {
+                ) as bool?;
+                if (toUpdate == true) {
                   setState(() {
-                    noteToCreate = note;
-                    // ScaffoldMessenger.of(context).showSnackBar(
-                    //   const SnackBar(
-                    //     content: Text(
-                    //       "Note has been created",
-                    //       style: TextStyle(color: Colors.white),
-                    //     ),
-                    //   ),
-                    // );
+                    updated = false;
                   });
                 }
               },
@@ -87,17 +62,10 @@ class _NotesState extends State<Notes> {
               //do nothing
             },
             builder: (context, state) {
-              if (noteToCreate != null) {
-                context.read<NotesBloc>().add(AddNote(noteToCreate!));
-                noteToCreate = null;
-              }
-              if (noteToUpdate != null) {
-                context.read<NotesBloc>().add(UpdateNote(noteToUpdate!));
-                noteToUpdate = null;
-              }
-              if (noteToDelete != null) {
-                context.read<NotesBloc>().add(DeleteNote(noteToDelete!.id!));
-                noteToDelete = null;
+              if (updated == false) {
+                print("getting all notes");
+                context.read<NotesBloc>().add(const GetAllNotes());
+                updated = true;
               }
               if (state is NotesStateValid) {
                 return DraggableScrollableSheet(
@@ -115,7 +83,8 @@ class _NotesState extends State<Notes> {
                                   text: state.notes![index].text,
                                   icon: state.notes![index].icon,
                                   date: state.notes![index].date,
-                                  rememberdate: state.notes?[index].rememberdate,
+                                  rememberdate:
+                                      state.notes?[index].rememberdate,
                                   id: state.notes![index].id),
                             );
                           });

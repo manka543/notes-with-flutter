@@ -27,3 +27,7 @@ class AddOrEditNoteStateError extends AddOrEditNoteState {
 class DeletedState extends AddOrEditNoteState {
   const DeletedState() : super(null);
 }
+
+class UpdatedState extends AddOrEditNoteState {
+  const UpdatedState() : super(null);
+}

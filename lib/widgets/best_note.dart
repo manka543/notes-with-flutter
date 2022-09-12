@@ -17,11 +17,11 @@ class Note extends StatefulWidget {
 
 class _NoteState extends State<Note> {
   bool selected = false;
-  DataBaseNote? toUpdate;
+  bool? toUpdate;
   @override
   Widget build(BuildContext context) {
-    if(toUpdate != null){
-      context.read<NotesBloc>().add(UpdateNote(toUpdate!));
+    if (toUpdate == true) {
+      context.read<NotesBloc>().add(const GetAllNotes());
     }
     return Padding(
       padding: const EdgeInsets.all(15),
@@ -136,14 +136,17 @@ class _NoteState extends State<Note> {
                           ),
                           Expanded(
                             child: IconButton(
-                              onPressed: () async {
-                                final DataBaseNote? noteToUpdate = await Navigator.pushNamed(context, addOrEditNoteViewRoute, arguments: widget.note.id) as DataBaseNote?;
-                                  if(noteToUpdate != null){
+                                onPressed: () async {
+                                  final updated = await Navigator.pushNamed(
+                                      context, addOrEditNoteViewRoute,
+                                      arguments: widget.note.id) as bool?;
+                                  if (updated != null) {
                                     setState(() {
-                                      toUpdate = noteToUpdate;
+                                      toUpdate = updated;
                                     });
-                              }
-                            }, icon: const Icon(Icons.edit)),
+                                  }
+                                },
+                                icon: const Icon(Icons.edit)),
                           ),
                         ],
                       ),
