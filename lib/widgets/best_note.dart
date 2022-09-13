@@ -128,9 +128,14 @@ class _NoteState extends State<Note> {
                           ),
                           Expanded(
                             child: IconButton(
-                                onPressed: () {
-                                  Navigator.pushNamed(context, noteViewRoute,
-                                      arguments: widget.note.id);
+                                onPressed: () async {
+                                  final updated = await Navigator.pushNamed(context, noteViewRoute,
+                                      arguments: widget.note.id) as bool?;
+                                  if (updated != null) {
+                                    setState(() {
+                                      toUpdate = updated;
+                                    });
+                                  }
                                 },
                                 icon: const Icon(Icons.zoom_in)),
                           ),

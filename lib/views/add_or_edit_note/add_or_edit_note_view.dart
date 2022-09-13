@@ -97,7 +97,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
             }),
             child: Scaffold(
               appBar: AppBar(
-                title: const Text("Note"),
+                title: const Text("Editing note"),
                 actions: <Widget>[
                   IconButton(
                     onPressed: () {
@@ -110,6 +110,8 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                 ],
               ),
               floatingActionButton: FloatingActionButton(
+                shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15))),
                 onPressed: () {
                   final note = DataBaseNote(
                       text: _textController.text,

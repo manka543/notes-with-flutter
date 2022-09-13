@@ -42,7 +42,7 @@ class _NotesState extends State<Notes> {
             },
           ),
           appBar: AppBar(
-            title: const Text("notes"),
+            title: const Text("Notes"),
             leading: IconButton(
               icon: const Icon(Icons.note_add),
               onPressed: () async {

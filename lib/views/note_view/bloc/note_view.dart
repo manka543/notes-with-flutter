@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:notes/const/routes.dart';
+import 'package:notes/fuctions/date_time_to_string.dart';
 import 'package:notes/views/note_view/bloc/note_view_bloc.dart';
 
 class NoteView extends StatefulWidget {
@@ -10,13 +12,23 @@ class NoteView extends StatefulWidget {
 
 class _NoteViewState extends State<NoteView> {
   int? id;
+  bool updated = true;
   @override
   Widget build(BuildContext context) {
     id = ModalRoute.of(context)!.settings.arguments as int;
     return BlocProvider(
       create: (context) => NoteViewBloc(),
-      child: BlocBuilder<NoteViewBloc, NoteViewState>(
+      child: BlocConsumer<NoteViewBloc, NoteViewState>(
+        listener: (context, state) {
+          if (state is NoteViewExit) {
+            Navigator.pop(context, true);
+          }
+        },
         builder: (context, state) {
+          if (updated == false) {
+            context.read<NoteViewBloc>().add(GetNoteEvent(id!));
+            updated = true;
+          }
           if (state is NoteViewInitial) {
             context.read<NoteViewBloc>().add(GetNoteEvent(id!));
             return Scaffold(
@@ -26,19 +38,65 @@ class _NoteViewState extends State<NoteView> {
           } else if (state is NoteViewValid) {
             return Scaffold(
               appBar: AppBar(
-                title: Text(state.note.title),
+                title: const Text("Note Details"),
                 actions: [
-                  IconButton(onPressed: () {}, icon: const Icon(Icons.delete)),
+                  IconButton(
+                      onPressed: () {
+                        context.read<NoteViewBloc>().add(DeleteNoteEvent(id!));
+                      },
+                      icon: const Icon(Icons.delete)),
                   IconButton(
                       onPressed: () {}, icon: const Icon(Icons.more_vert)),
                 ],
               ),
-              body: Column(
+              floatingActionButton: FloatingActionButton(
+                onPressed: () async {
+                  final toUpdate = await Navigator.of(context).pushNamed(
+                    addOrEditNoteViewRoute,
+                    arguments: id,
+                  ) as bool?;
+                  if (toUpdate == true) {
+                    setState(() {
+                      updated = false;
+                    });
+                  }
+                },
+                backgroundColor: Colors.yellow,
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(15))),
+                child: const Icon(Icons.edit),
+              ),
+              body: ListView(
+                padding: const EdgeInsets.all(15),
                 children: [
-                  Text(state.note.title),
+                  Text(
+                    state.note.title,
+                    style: const TextStyle(
+                      color: Colors.white54,
+                      fontSize: 35,
+                      fontWeight: FontWeight.w300,
+                      fontFamily: "ubuntu",
+                    ),
+                    softWrap: true,
+                  ),
+                  // const Divider(indent: 15, endIndent: 15,),
+                  // Text(state.note.title, style: const TextStyle(fontSize: 25),),
+                  const Divider(
+                    indent: 15,
+                    endIndent: 15,
+                  ),
                   Text(state.note.text),
-                  Text("date: ${state.note.date}"),
-                  Text("rememberdate: ${state.note.rememberdate}"),
+                  const Divider(
+                    indent: 15,
+                    endIndent: 15,
+                  ),
+                  Text("Created: ${dateTimeToString(state.note.date)}"),
+                  const Divider(
+                    indent: 15,
+                    endIndent: 15,
+                  ),
+                  Text(
+                      "Rememberdate: ${dateTimeToString(state.note.rememberdate) ?? "no notification"}"),
                 ],
               ),
             );

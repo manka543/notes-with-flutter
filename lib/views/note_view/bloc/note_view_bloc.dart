@@ -18,8 +18,8 @@ class NoteViewBloc extends Bloc<NoteViewEvent, NoteViewState> {
           note,
         ));
       } catch (exception) {
-        print(exception);
-        emit(NoteViewError());
+        print("exception: $exception");
+        emit(NoteViewExit());
       }
     });
     on<DeleteNoteEvent>((event, emit) async {
