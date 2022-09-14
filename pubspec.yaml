@@ -41,6 +41,7 @@ dependencies:
   path: ^1.8.1
   flutter_local_notifications: ^9.9.0
   timezone: ^0.8.0
+  awesome_notifications: ^0.6.21
 
 dev_dependencies:
   flutter_test:
@@ -52,7 +53,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
-
+  icons_launcher: ^2.0.4
+  
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -94,3 +96,15 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+icons_launcher:
+  image_path: 'assets/ic_notes.png'
+  platforms:
+    android:
+      enable: true
+      image_path: 'assets/ic_notes.png'
+      adaptive_background_color: '#000000'
+      # adaptive_background_image: 'assets/ic_notes_background.png'
+      adaptive_foreground_image: 'assets/ic_notes_foreground.png'
+      adaptive_round_image: 'assets/ic_notes.png'
+    ios:
+      enable: true

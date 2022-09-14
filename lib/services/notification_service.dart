@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
@@ -32,7 +33,7 @@ class NotificationService {
     required String text,
   }) async {
     ensureInitializaed();
-    //final AndroidNotificationDetails details = _notificationDetails();
+    final AndroidNotificationDetails details = _notificationDetails();
     await _notificationService.show(id, title, text,
         notificationDetails: _notificationDetails());
   }
@@ -51,7 +52,7 @@ class NotificationService {
       required DateTime date,
       required}) async {
     ensureInitializaed();
-    //final AndroidNotificationDetails details = _notificationDetails();
+    final AndroidNotificationDetails details = _notificationDetails();
     await _notificationService.zonedSchedule(
       id,
       title,
@@ -64,9 +65,9 @@ class NotificationService {
   }
 }
 
-//void _onDidReceiveLocalNotification(int id, String? title, String? body, String? payload){
+// void _onDidReceiveLocalNotification(int id, String? title, String? body, String? payload){
 //  print('id: $id');
-//}
+// }
 
 void _onSelectNotification(String? payload) {
   print("payload: $payload");
