@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/const/routes.dart';
-import 'package:notes/fuctions/date_time_to_string.dart';
 import 'package:notes/services/database_note.dart';
 import 'package:notes/services/to_icon.dart';
 import 'package:notes/views/notes/notes_bloc.dart';

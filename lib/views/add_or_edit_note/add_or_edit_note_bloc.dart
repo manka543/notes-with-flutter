@@ -3,7 +3,6 @@ import 'package:notes/services/awesome_notifications_service.dart';
 import 'package:notes/services/database_note.dart';
 import 'package:notes/services/notes_service.dart';
 import 'package:notes/services/notes_service_exeptions.dart';
-import 'package:notes/services/notification_service.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_events.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_states.dart';
 
@@ -11,7 +10,6 @@ class AddOrEditNoteBloc extends Bloc<AddOrEditNoteEvent, AddOrEditNoteState> {
   AddOrEditNoteBloc() : super(const AddOrEditNoteInitialState(null)) {
     on<EditNoteEvent>(
       (event, emit) async {
-        print("I'm in edit note event");
         final notesService = NotesService();
         final awesomeNotificationService = AwesomeNotificationService();
         final oldNote = await notesService.getNote(id: event.note!.id!);
@@ -32,7 +30,6 @@ class AddOrEditNoteBloc extends Bloc<AddOrEditNoteEvent, AddOrEditNoteState> {
               date: editednote.rememberdate!,
             );
           }
-          print(editednote);
           emit(AddOrEditNoteStateValid(editednote));
         } on CouldNotCreateNoteException {
           emit(const AddOrEditNoteStateError(null));
@@ -41,7 +38,6 @@ class AddOrEditNoteBloc extends Bloc<AddOrEditNoteEvent, AddOrEditNoteState> {
     );
     on<FinalEditEvent>(
       (event, emit) async {
-        print("I'm in final edit event");
         final notesService = NotesService();
         final awesomeNotificationService = AwesomeNotificationService();
         final oldNote = await notesService.getNote(id: event.note!.id!);
@@ -62,7 +58,6 @@ class AddOrEditNoteBloc extends Bloc<AddOrEditNoteEvent, AddOrEditNoteState> {
               date: editednote.rememberdate!,
             );
           }
-          print(editednote);
           emit(const UpdatedState());
         } on CouldNotCreateNoteException {
           emit(const AddOrEditNoteStateError(null));
@@ -78,8 +73,6 @@ class AddOrEditNoteBloc extends Bloc<AddOrEditNoteEvent, AddOrEditNoteState> {
           final deletedNote = await notesService.getNote(id: event.id!);
           try {
             await notesService.deleteNote(id: event.id!);
-            // final notificationService = NotificationService();
-            // notificationService.cancelSheduledNotification(id: event.id!);
             final awesomeNotificationService = AwesomeNotificationService();
             if (deletedNote.rememberdate != null &&
                 deletedNote.rememberdate!.isAfter(DateTime.now())) {
@@ -105,7 +98,6 @@ class AddOrEditNoteBloc extends Bloc<AddOrEditNoteEvent, AddOrEditNoteState> {
           rememberdate: null,
           id: null,
         ));
-        print(creatednote);
         emit(AddOrEditNoteStateValid(creatednote));
       } on CouldNotCreateNoteException {
         emit(const AddOrEditNoteStateError(null));
@@ -120,7 +112,6 @@ class AddOrEditNoteBloc extends Bloc<AddOrEditNoteEvent, AddOrEditNoteState> {
             note,
           ));
         } catch (exception) {
-          print(exception);
           emit(const AddOrEditNoteStateError(null));
         }
       },

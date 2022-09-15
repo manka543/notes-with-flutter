@@ -5,7 +5,6 @@ import 'package:notes/services/database_note.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_bloc.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_events.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_states.dart';
-import 'package:notes/views/notes/notes_event.dart';
 
 class AddOrEditNoteView extends StatefulWidget {
   const AddOrEditNoteView({Key? key}) : super(key: key);
@@ -39,13 +38,11 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
   @override
   Widget build(BuildContext context) {
     id = ModalRoute.of(context)!.settings.arguments as int? ?? id;
-    print(id);
     return BlocProvider(
       create: (context) => AddOrEditNoteBloc(),
       child: BlocConsumer<AddOrEditNoteBloc, AddOrEditNoteState>(
         listener: (context, state) {
           if (state is AddOrEditNoteInitialState) {
-            print("now i am here");
             if (id == null) {
               context
                   .read<AddOrEditNoteBloc>()
@@ -70,7 +67,6 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
         },
         builder: (context, state) {
           if (state is AddOrEditNoteInitialState) {
-            print("now i am here");
             if (id == null) {
               context
                   .read<AddOrEditNoteBloc>()

@@ -35,8 +35,6 @@ class MyApp extends StatelessWidget {
       routes: {
         addOrEditNoteViewRoute: (context) => const AddOrEditNoteView(),
         notesRoute: (context) => const Notes(),
-        //popUpNoteDetailsRoute: (context, DataBaseNote note) => PopUpNoteDetails(),
-        //notesViewRoute :(context, note) => NoteView(note: note,),
         noteViewRoute: (context) => const NoteView(),
       },
       home: const Notes(),

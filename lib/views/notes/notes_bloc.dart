@@ -2,7 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/services/awesome_notifications_service.dart';
 import 'package:notes/services/notes_service.dart';
 import 'package:notes/services/notes_service_exeptions.dart';
-import 'package:notes/services/notification_service.dart';
 import 'package:notes/views/notes/notes_event.dart';
 import 'package:notes/views/notes/notes_state.dart';
 
@@ -17,20 +16,16 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
             notes,
           ));
         } catch (exception) {
-          print(exception);
           emit(const NotesStateError(null, null, null));
         }
       },
     );
     on<DeleteNote>(
       (event, emit) async {
-        print("usuwanie notatki o id: ${event.id}");
         final NotesService notesService = NotesService();
         final oldNote = await notesService.getNote(id: event.id);
         try {
           await notesService.deleteNote(id: event.id);
-          // final notificationService = NotificationService();
-          // notificationService.cancelSheduledNotification(id: event.id);
           if (oldNote.rememberdate != null &&
               oldNote.rememberdate!.isAfter(DateTime.now())) {
             final awesomeNotificationService = AwesomeNotificationService();
@@ -47,18 +42,11 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
     );
     on<AddNote>(
       (event, emit) async {
-        print("dodawanie notatki o tytule ${event.note.title}");
         final NotesService notesService = NotesService();
         try {
           final note = await notesService.createNote(note: event.note);
           if (note.rememberdate != null &&
               note.rememberdate!.isAfter(DateTime.now())) {
-            // final notificationService = NotificationService();
-            // notificationService.showScheduledNotification(
-            //     id: note.id!,
-            //     title: note.title,
-            //     text: note.text,
-            //     date: note.rememberdate!);
             final awesomeNotificationService = AwesomeNotificationService();
             awesomeNotificationService.showScheduledNotification(
               id: note.id!,
@@ -89,13 +77,6 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
             awesomeNotificationService.cancelSheduledNotification(id: note.id!);
           }
           if (note.rememberdate != null) {
-            // final notificationService = NotificationService();
-            // notificationService.cancelSheduledNotification(id: note.id!);
-            // notificationService.showScheduledNotification(
-            //     id: note.id!,
-            //     title: note.title,
-            //     text: note.text,
-            //     date: note.rememberdate!);
             awesomeNotificationService.showScheduledNotification(
               id: note.id!,
               title: note.title,

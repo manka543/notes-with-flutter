@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:notes/services/database_note.dart';
 import 'package:notes/services/databasequeries.dart';
 import 'package:notes/services/notes_service_exeptions.dart';
-import 'package:notes/services/to_icon.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -15,7 +13,6 @@ class NotesService {
   late final String dataBasePath;
   Database? _database;
   static String dbname = "databasenote.db";
-  List<DataBaseNote?>? _notes;
 
   Future<void> open() async {
     if (_database != null) {
@@ -27,10 +24,6 @@ class NotesService {
       final database = await openDatabase(dataBasePath);
       _database = database;
       await _database?.execute(createNotesTable);
-      //final czysieudalo = await _database?.rawInsert(""" INSERT INTO $table($title,$text,$date,$rememberDate,$icon) VALUES("testitle","testext","2022-08-22 15:02","2022-08-23 15:02","share") """);
-      //if(czysieudalo == 1){
-      //  print("udalo sie");
-      //}
     } on MissingPlatformDirectoryException {
       throw UnableToGetDocumentDirectory;
     }
@@ -101,7 +94,6 @@ class NotesService {
   Future<DataBaseNote> updateNote({required DataBaseNote note}) async {
     await _ensureDatabaseOpen();
     final database = getDatabase();
-    final notedb = getNote(id: note.id!);
     final updateCount = await database.update(
         table,
         {
@@ -112,15 +104,9 @@ class NotesService {
         },
         where: '$noteid = ?',
         whereArgs: [note.id]);
-    // final updateCount = await database.rawUpdate(
-    //   """UPDATE $table SET $title = ?, $text = ?, $rememberDate = ? WHERE $noteid = ? """,
-    //   [note.title, note.text, note.rememberdate.toString(), note.id],
-    // );
     if (updateCount != 1) {
-      print(updateCount);
       throw CouldNotUpdateNoteException();
     }
-    _notes = await getallNotes();
     return await getNote(id: note.id!);
   }
 
@@ -138,9 +124,8 @@ class NotesService {
       ],
     );
     if (insertCount != 1) {
-      //throw CouldNotCreateNoteException();
+      throw CouldNotCreateNoteException();
     }
-    _notes = await getallNotes();
     return await getNote(id: insertCount);
   }
 
@@ -152,6 +137,5 @@ class NotesService {
     if (noteDeleteCount != 1) {
       throw CouldNotDeleteException();
     }
-    _notes = await getallNotes();
   }
 }

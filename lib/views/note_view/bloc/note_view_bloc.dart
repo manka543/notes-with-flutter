@@ -1,9 +1,8 @@
-import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/services/database_note.dart';
 import 'package:notes/services/notes_service.dart';
 import 'package:notes/services/notes_service_exeptions.dart';
-import 'package:notes/services/notification_service.dart';
 
 import '../../../services/awesome_notifications_service.dart';
 
@@ -20,18 +19,14 @@ class NoteViewBloc extends Bloc<NoteViewEvent, NoteViewState> {
           note,
         ));
       } catch (exception) {
-        print("exception: $exception");
         emit(NoteViewExit());
       }
     });
     on<DeleteNoteEvent>((event, emit) async {
-      print("usuwanie notatki o id: ${event.id}");
       final NotesService notesService = NotesService();
       final deletedNote = await notesService.getNote(id: event.id);
       try {
         await notesService.deleteNote(id: event.id);
-        // final notificationService = NotificationService();
-        // notificationService.cancelSheduledNotification(id: event.id);
         if (deletedNote.rememberdate != null &&
             deletedNote.rememberdate!.isAfter(DateTime.now())) {
           final awesomeNotificationService = AwesomeNotificationService();
