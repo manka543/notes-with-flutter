@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:notes/services/awesome_notifications_service.dart';
+import 'package:notes/services/notes_service.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_view.dart';
 import 'package:notes/views/note_view/bloc/note_view.dart';
 import 'const/routes.dart';
 import 'views/notes/notes.dart';
 
 void main() async {
-  final service = AwesomeNotificationService();
-  service.ensureInitializaed();
+  final service = NotesService();
+  service.notificationInitialize();
   runApp(const MyApp());
 }
 

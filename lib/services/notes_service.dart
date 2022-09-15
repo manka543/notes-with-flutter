@@ -4,6 +4,9 @@ import 'package:notes/services/notes_service_exeptions.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:flutter/material.dart';
+import 'package:notes/const/notification_keys.dart';
 
 class NotesService {
   static final NotesService _shared = NotesService._sharedInstance();
@@ -27,6 +30,59 @@ class NotesService {
     } on MissingPlatformDirectoryException {
       throw UnableToGetDocumentDirectory;
     }
+  }
+
+  void notificationInitialize() {
+    AwesomeNotifications().initialize(
+      "resource://drawable/res_ic_notes",
+      [
+        NotificationChannel(
+          channelName: "Notes channel",
+          channelShowBadge: true,
+          channelDescription: "Notification channel to for user notes",
+          defaultColor: Colors.yellow,
+          channelKey: notesChannelKey,
+          importance: NotificationImportance.High,
+          playSound: true,
+          enableVibration: true,
+        )
+      ],
+    );
+  }
+
+  Future<void> cancelSheduledNotification({required int id}) async {
+    AwesomeNotifications().cancelSchedule(id);
+  }
+
+  Future<void> showScheduledNotification(
+      {required int id,
+      required String title,
+      required String text,
+      required DateTime date}) async {
+    await AwesomeNotifications().createNotification(
+      content: NotificationContent(
+          channelKey: notesChannelKey,
+          id: id,
+          title: title,
+          body: text,
+          color: Colors.yellow,
+          category: NotificationCategory.Reminder,
+          notificationLayout: NotificationLayout.Default),
+      schedule: NotificationCalendar(
+        allowWhileIdle: true,
+        year: date.year,
+        month: date.month,
+        day: date.day,
+        hour: date.hour,
+        minute: date.minute,
+        second: 0,
+        millisecond: 0,
+      ),
+      actionButtons: [
+        NotificationActionButton(key: "DELETE_NOTE", label: "Delete note"),
+        NotificationActionButton(key: "OPEN_NOTE", label: "Open note"),
+      ],
+    );
   }
 
   Future<void> _ensureDatabaseOpen() async {
@@ -94,6 +150,7 @@ class NotesService {
   Future<DataBaseNote> updateNote({required DataBaseNote note}) async {
     await _ensureDatabaseOpen();
     final database = getDatabase();
+    final oldNote = await getNote(id: note.id!);
     final updateCount = await database.update(
         table,
         {
@@ -107,13 +164,26 @@ class NotesService {
     if (updateCount != 1) {
       throw CouldNotUpdateNoteException();
     }
+    if (oldNote.rememberdate != null &&
+        oldNote.rememberdate!.isAfter(DateTime.now())) {
+      cancelSheduledNotification(id: note.id!);
+    }
+    if (note.rememberdate != null &&
+        note.rememberdate!.isAfter(DateTime.now())) {
+      showScheduledNotification(
+        id: note.id!,
+        title: note.title,
+        text: note.text,
+        date: note.rememberdate!,
+      );
+    }
     return await getNote(id: note.id!);
   }
 
   Future<DataBaseNote> createNote({required DataBaseNote note}) async {
     await _ensureDatabaseOpen();
     final database = getDatabase();
-    final insertCount = await database.rawInsert(
+    final insertId = await database.rawInsert(
       "INSERT INTO $table($title,$text,$date,$rememberDate,$icon) VALUES(?,?,?,?,?)",
       [
         note.title,
@@ -123,17 +193,32 @@ class NotesService {
         note.icon,
       ],
     );
-    if (insertCount != 1) {
+    if (insertId == 0) {
       throw CouldNotCreateNoteException();
     }
-    return await getNote(id: insertCount);
+    if (note.rememberdate != null &&
+        note.rememberdate!.isAfter(DateTime.now())) {
+      showScheduledNotification(
+        id: note.id!,
+        title: note.title,
+        text: note.text,
+        date: note.rememberdate!,
+      );
+    }
+    return await getNote(id: insertId);
   }
 
   Future<void> deleteNote({required int id}) async {
     await _ensureDatabaseOpen();
     final database = getDatabase();
+    final deletedNote = await getNote(id: id);
     final noteDeleteCount =
         await database.rawDelete("""DELETE FROM $table WHERE $noteid = $id """);
+    if (deletedNote.rememberdate != null &&
+        deletedNote.rememberdate!.isAfter(DateTime.now())) {
+      cancelSheduledNotification(id: id);
+    }
+
     if (noteDeleteCount != 1) {
       throw CouldNotDeleteException();
     }

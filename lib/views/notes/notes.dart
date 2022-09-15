@@ -98,7 +98,6 @@ class _NotesState extends State<Notes> {
             },
             builder: (context, state) {
               if (updated == false) {
-                print("getting all notes");
                 context.read<NotesBloc>().add(const GetAllNotes());
                 updated = true;
               }
