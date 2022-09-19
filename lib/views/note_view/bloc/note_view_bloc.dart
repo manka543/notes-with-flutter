@@ -29,5 +29,14 @@ class NoteViewBloc extends Bloc<NoteViewEvent, NoteViewState> {
       }
       emit(NoteViewExit());
     });
+    on<ChangeFavourity>((event, emit) async {
+      final NotesService notesService = NotesService();
+      try{
+        await notesService.changeFavourity(favourity: event.favourity, id: event.id,);
+        emit(NoteViewValid(await notesService.getNote(id: event.id)));
+      } on CouldNotUpdateNoteException {
+        emit(NoteViewError());
+      }
+    },);
   }
 }

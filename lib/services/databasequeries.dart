@@ -4,7 +4,7 @@ const createNotesTable = """CREATE TABLE IF NOT EXISTS "notes" (
 	"Text"	TEXT,
 	"Date"	TEXT,
 	"RememberDate"	TEXT,
-	"Icon"	TEXT,
+	"Favourite"	TEXT,
 	PRIMARY KEY("ID" AUTOINCREMENT)
 )""";
 
@@ -14,4 +14,4 @@ const title = "Title";
 const text = "Text";
 const date = "Date";
 const rememberDate = "RememberDate";
-const icon = "Icon";
+const favourite = "Favourite";

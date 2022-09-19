@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/const/routes.dart';
 import 'package:notes/fuctions/date_time_to_string.dart';
+import 'package:notes/fuctions/to_bool.dart';
+import 'package:notes/services/to_icon.dart';
 import 'package:notes/views/note_view/bloc/note_view_bloc.dart';
 
 class NoteView extends StatefulWidget {
@@ -41,12 +43,25 @@ class _NoteViewState extends State<NoteView> {
                 title: const Text("Note Details"),
                 actions: [
                   IconButton(
+                    onPressed: (() {
+                      if(state.note.favourite == "true"){
+                        context.read<NoteViewBloc>().add(ChangeFavourity("false", state.note.id!));
+                      } else {
+                        context.read<NoteViewBloc>().add(ChangeFavourity("true", state.note.id!));
+                      }
+                      setState(() {
+                      updated = false;
+                    });
+                    }),
+                    icon: Icon(toIcon(state.note.favourite)),
+                  ),
+                  IconButton(
                       onPressed: () {
                         context.read<NoteViewBloc>().add(DeleteNoteEvent(id!));
                       },
                       icon: const Icon(Icons.delete)),
-                  IconButton(
-                      onPressed: () {}, icon: const Icon(Icons.more_vert)),
+                  // IconButton(
+                  //     onPressed: () {}, icon: const Icon(Icons.more_vert)),
                 ],
               ),
               floatingActionButton: FloatingActionButton(

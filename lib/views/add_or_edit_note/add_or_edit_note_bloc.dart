@@ -54,7 +54,7 @@ class AddOrEditNoteBloc extends Bloc<AddOrEditNoteEvent, AddOrEditNoteState> {
             note: DataBaseNote(
           title: "",
           text: "",
-          icon: "",
+          favourite: "false",
           date: DateTime.now(),
           rememberdate: null,
           id: null,

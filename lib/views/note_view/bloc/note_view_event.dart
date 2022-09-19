@@ -14,3 +14,8 @@ class DeleteNoteEvent extends NoteViewEvent {
 
   DeleteNoteEvent(this.id);
 }
+class ChangeFavourity extends NoteViewEvent {
+  final String favourity;
+  final int id;
+  ChangeFavourity(this.favourity, this.id);
+}

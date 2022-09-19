@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/fuctions/date_time_to_string.dart';
 import 'package:notes/services/database_note.dart';
+import 'package:notes/services/to_icon.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_bloc.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_events.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_states.dart';
@@ -17,9 +18,9 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
   late final TextEditingController _titleController;
   late final TextEditingController _textController;
   DateTime? rememberDate;
-  String? icon;
   bool rememberDateSwich = false;
   int? id;
+  String favourite = "false";
 
   @override
   void initState() {
@@ -59,7 +60,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                 rememberDate = state.note!.rememberdate;
                 rememberDateSwich = true;
               }
-              icon = state.note!.icon;
+              favourite = state.note!.favourite;
             });
           } else if (state is DeletedState || state is UpdatedState) {
             Navigator.pop(context, true);
@@ -83,7 +84,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                 final note = DataBaseNote(
                     text: _textController.text,
                     title: _titleController.text,
-                    icon: "thermostat_auto",
+                    favourite: favourite,
                     date: DateTime.now(),
                     rememberdate: rememberDate,
                     id: id);
@@ -95,6 +96,20 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
               appBar: AppBar(
                 title: const Text("Editing note"),
                 actions: <Widget>[
+                  IconButton(
+                    onPressed: (() {
+                      if(favourite == "true"){
+                        setState(() {
+                          favourite = "false";
+                        });
+                      } else {
+                        setState(() {
+                          favourite = "true";
+                        });
+                      }
+                    }),
+                    icon: Icon(toIcon(favourite)),
+                  ),
                   IconButton(
                     onPressed: () {
                       context
@@ -112,7 +127,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                   final note = DataBaseNote(
                       text: _textController.text,
                       title: _titleController.text,
-                      icon: "thermostat_auto",
+                      favourite: favourite,
                       date: DateTime.now(),
                       rememberdate: rememberDate,
                       id: id);

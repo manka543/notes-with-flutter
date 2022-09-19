@@ -7,6 +7,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:notes/const/notification_keys.dart';
+import 'package:notes/fuctions/to_bool.dart';
 
 class NotesService {
   static final NotesService _shared = NotesService._sharedInstance();
@@ -121,7 +122,7 @@ class NotesService {
       notes.add(DataBaseNote(
           title: rawNote[title].toString(),
           text: rawNote[text].toString(),
-          icon: rawNote[icon].toString(),
+          favourite: rawNote[favourite].toString(),
           date: DateTime.parse(rawNote[date].toString()),
           rememberdate: DateTime.tryParse(rawNote[rememberDate].toString()),
           id: int.parse(rawNote[noteid].toString())));
@@ -141,7 +142,7 @@ class NotesService {
     return DataBaseNote(
         title: rawNote[title].toString(),
         text: rawNote[text].toString(),
-        icon: rawNote[icon].toString(),
+        favourite: rawNote[favourite].toString(),
         date: DateTime.parse(rawNote[date].toString()),
         rememberdate: DateTime.tryParse(rawNote[rememberDate].toString()),
         id: int.parse(rawNote[noteid].toString()));
@@ -157,7 +158,7 @@ class NotesService {
           title: note.title,
           text: note.text,
           rememberDate: note.rememberdate.toString(),
-          icon: note.icon,
+          favourite: note.favourite,
         },
         where: '$noteid = ?',
         whereArgs: [note.id]);
@@ -180,17 +181,27 @@ class NotesService {
     return await getNote(id: note.id!);
   }
 
+  Future<DataBaseNote> changeFavourity({required int id, required String favourity}) async {
+    await _ensureDatabaseOpen();
+    final dataBase = getDatabase();
+    final updateCount = await dataBase.rawUpdate("UPDATE $table SET $favourite = ? WHERE $noteid = ?", [favourity, id]);
+    if(updateCount != 1){
+      throw CouldNotUpdateNoteException();
+    }
+    return await getNote(id: id);
+  }
+
   Future<DataBaseNote> createNote({required DataBaseNote note}) async {
     await _ensureDatabaseOpen();
     final database = getDatabase();
     final insertId = await database.rawInsert(
-      "INSERT INTO $table($title,$text,$date,$rememberDate,$icon) VALUES(?,?,?,?,?)",
+      "INSERT INTO $table($title,$text,$date,$rememberDate,$favourite) VALUES(?,?,?,?,?)",
       [
         note.title,
         note.text,
         note.date.toString(),
         note.rememberdate.toString(),
-        note.icon,
+        note.favourite,
       ],
     );
     if (insertId == 0) {

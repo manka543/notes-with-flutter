@@ -115,7 +115,7 @@ class _NotesState extends State<Notes> {
                               note: DataBaseNote(
                                   title: state.notes![index].title,
                                   text: state.notes![index].text,
-                                  icon: state.notes![index].icon,
+                                  favourite: state.notes![index].favourite,
                                   date: state.notes![index].date,
                                   rememberdate:
                                       state.notes?[index].rememberdate,

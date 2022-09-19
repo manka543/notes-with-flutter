@@ -33,5 +33,14 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
         emit(NotesStateValid(await notesService.getallNotes()));
       },
     );
+    on<ChangeFavourity>((event, emit) async {
+      final NotesService notesService = NotesService();
+      try{
+        await notesService.changeFavourity(favourity: event.favourity, id: event.noteId,);
+        emit(NotesStateValid(await notesService.getallNotes()));
+      } on CouldNotUpdateNoteException {
+        emit(NotesStateError(await notesService.getallNotes(), CouldNotUpdateNoteException(), "Could not change favourity of your note"));
+      }
+    },);
   }
 }

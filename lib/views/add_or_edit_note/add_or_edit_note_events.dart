@@ -20,6 +20,12 @@ class CreateEmptyNoteEvent extends AddOrEditNoteEvent {
   const CreateEmptyNoteEvent() : super(null);
 }
 
+class ChangeFavourity extends AddOrEditNoteEvent {
+  final String favourity;
+  final int id;
+  const ChangeFavourity(this.favourity, this.id) : super(null);
+}
+
 class GetNoteEvent extends AddOrEditNoteEvent {
   final int id;
   const GetNoteEvent(this.id) : super(null);

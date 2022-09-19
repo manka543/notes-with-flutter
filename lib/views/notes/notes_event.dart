@@ -24,3 +24,9 @@ class UpdateNote extends NotesEvent {
   final DataBaseNote note;
   const UpdateNote(this.note);
 }
+
+class ChangeFavourity extends NotesEvent {
+  final String favourity;
+  final int noteId;
+  const ChangeFavourity(this.favourity, this.noteId);
+}
