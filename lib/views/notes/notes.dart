@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/const/routes.dart';
 import 'package:notes/services/database_note.dart';
+import 'package:notes/services/notes_service.dart';
 import 'package:notes/views/notes/notes_bloc.dart';
 import 'package:notes/views/notes/notes_event.dart';
 import 'package:notes/widgets/best_note.dart';
@@ -21,6 +22,13 @@ class _NotesState extends State<Notes> {
   DataBaseNote? noteToUpdate;
   DataBaseNote? noteToDelete;
   bool updated = true;
+
+  @override
+  void dispose(){
+    final notesService = NotesService();
+    notesService.disposeStreams();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -53,6 +61,8 @@ class _NotesState extends State<Notes> {
         );
       }
     });
+    final notesService = NotesService();
+    notesService.createNotificationListeners(context);
   }
 
   @override

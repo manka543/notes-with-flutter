@@ -9,6 +9,7 @@ void main() async {
   final service = NotesService();
   service.notificationInitialize();
   runApp(const MyApp());
+
 }
 
 class MyApp extends StatelessWidget {

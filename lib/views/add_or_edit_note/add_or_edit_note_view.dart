@@ -145,6 +145,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                 child: const Icon(Icons.save),
               ),
               body: ListView(
+                padding: const EdgeInsets.all(15),
                 children: [
                   const Text("Title:"),
                   TextField(

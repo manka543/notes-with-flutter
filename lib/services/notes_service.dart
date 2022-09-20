@@ -1,3 +1,4 @@
+import 'package:notes/const/routes.dart';
 import 'package:notes/services/database_note.dart';
 import 'package:notes/services/databasequeries.dart';
 import 'package:notes/services/notes_service_exeptions.dart';
@@ -80,10 +81,39 @@ class NotesService {
         millisecond: 0,
       ),
       actionButtons: [
-        NotificationActionButton(key: "DELETE_NOTE", label: "Delete note"),
-        NotificationActionButton(key: "OPEN_NOTE", label: "Open note"),
+        NotificationActionButton(key: "DELETE", label: "Delete",buttonType: ActionButtonType.KeepOnTop),
+        NotificationActionButton(key: "REMIND_IN_10_MIN", label: "10 min",buttonType: ActionButtonType.KeepOnTop),
+        NotificationActionButton(key: "REMIND_IN_1_H", label: "1 h",buttonType: ActionButtonType.KeepOnTop),
+        NotificationActionButton(key: "REMIND_IN_1_D", label: "1 day",buttonType: ActionButtonType.KeepOnTop),
       ],
     );
+  }
+
+  void createNotificationListeners(BuildContext context) {
+      print("i am here2");
+    AwesomeNotifications().actionStream.listen((notification) async {
+      print("notification: $notification");
+      if(notification.buttonKeyPressed == "DELETE"){
+        print("i am here3");
+
+        await deleteNote(id: notification.id!);
+      } else if (notification.buttonKeyPressed == "REMIND_IN_10_MIN"){
+        final note = await getNote(id: notification.id!);
+        await updateNote(note: DataBaseNote(title: note.title, text: note.text, favourite: note.favourite, date: note.date, rememberdate: DateTime.now().add(const Duration(minutes: 10)),id: notification.id,));
+      }else if (notification.buttonKeyPressed == "REMIND_IN_1_H"){
+        final note = await getNote(id: notification.id!);
+        await updateNote(note: DataBaseNote(title: note.title, text: note.text, favourite: note.favourite, date: note.date, rememberdate: DateTime.now().add(const Duration(hours: 1)),id: notification.id,));
+      }else if (notification.buttonKeyPressed == "REMIND_IN_1_D"){
+        final note = await getNote(id: notification.id!);
+        await updateNote(note: DataBaseNote(title: note.title, text: note.text, favourite: note.favourite, date: note.date, rememberdate: DateTime.now().add(const Duration(days: 1)),id: notification.id,));
+      } else {
+      Navigator.pushNamedAndRemoveUntil(context, noteViewRoute,arguments: notification.id, (route) => route.isFirst);
+      }
+    });
+  }
+
+  void disposeStreams(){
+    AwesomeNotifications().actionSink.close();
   }
 
   Future<void> _ensureDatabaseOpen() async {
