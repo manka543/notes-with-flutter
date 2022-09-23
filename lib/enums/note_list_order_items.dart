@@ -1,0 +1,4 @@
+enum NoteListOrderItems {
+  alphabeticallyDown,
+  alphabeticallyUp,
+}

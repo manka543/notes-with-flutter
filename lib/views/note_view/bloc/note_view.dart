@@ -6,6 +6,7 @@ import 'package:notes/fuctions/to_bool.dart';
 import 'package:notes/services/notes_service.dart';
 import 'package:notes/services/to_icon.dart';
 import 'package:notes/views/note_view/bloc/note_view_bloc.dart';
+import 'package:notes/widgets/note_list_item.dart';
 
 class NoteView extends StatefulWidget {
   const NoteView({Key? key}) : super(key: key);
@@ -45,14 +46,18 @@ class _NoteViewState extends State<NoteView> {
                 actions: [
                   IconButton(
                     onPressed: (() {
-                      if(state.note.favourite == "true"){
-                        context.read<NoteViewBloc>().add(ChangeFavourity("false", state.note.id!));
+                      if (state.note.favourite == "true") {
+                        context
+                            .read<NoteViewBloc>()
+                            .add(ChangeFavourity("false", state.note.id!));
                       } else {
-                        context.read<NoteViewBloc>().add(ChangeFavourity("true", state.note.id!));
+                        context
+                            .read<NoteViewBloc>()
+                            .add(ChangeFavourity("true", state.note.id!));
                       }
                       setState(() {
-                      updated = false;
-                    });
+                        updated = false;
+                      });
                     }),
                     icon: Icon(toIcon(state.note.favourite)),
                   ),
@@ -95,13 +100,40 @@ class _NoteViewState extends State<NoteView> {
                     ),
                     softWrap: true,
                   ),
-                  // const Divider(indent: 15, endIndent: 15,),
-                  // Text(state.note.title, style: const TextStyle(fontSize: 25),),
                   const Divider(
                     indent: 15,
                     endIndent: 15,
                   ),
                   Text(state.note.text),
+                  Builder(
+                    builder: (context) {
+                      if (state.note.listName != null) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Divider(),
+                            Text(state.note.listName!, style: const TextStyle(fontSize: 24, color: Colors.white54, fontWeight: FontWeight.w300),)
+                          ],
+                        );
+                      }
+                      return Container();
+                    },
+                  ),
+                  Builder(
+                    builder: (context) {
+                      if (state.note.listItems != null) {
+                        var widgets = <Widget>[];
+                        widgets.add(const Divider());
+                        for (var noteItem in state.note.listItems!) {
+                          widgets.add(NoteListItem(item: noteItem));
+                        }
+                        return Column(
+                          children: widgets,
+                        );
+                      }
+                      return Container();
+                    },
+                  ),
                   const Divider(
                     indent: 15,
                     endIndent: 15,

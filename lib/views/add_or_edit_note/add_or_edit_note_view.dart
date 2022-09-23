@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:notes/enums/note_list_order_items.dart';
 import 'package:notes/fuctions/date_time_to_string.dart';
 import 'package:notes/services/database_note.dart';
 import 'package:notes/services/to_icon.dart';
@@ -17,10 +18,12 @@ class AddOrEditNoteView extends StatefulWidget {
 class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
   late final TextEditingController _titleController;
   late final TextEditingController _textController;
+  late TextEditingController _listNameController;
   DateTime? rememberDate;
-  bool rememberDateSwich = false;
+  bool rememberDateSwitch = false;
   int? id;
   String favourite = "false";
+  bool listSwitch = false;
 
   @override
   void initState() {
@@ -58,7 +61,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
               _textController.text = state.note!.text;
               if (state.note!.rememberdate != null) {
                 rememberDate = state.note!.rememberdate;
-                rememberDateSwich = true;
+                rememberDateSwitch = true;
               }
               favourite = state.note!.favourite;
             });
@@ -98,7 +101,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                 actions: <Widget>[
                   IconButton(
                     onPressed: (() {
-                      if(favourite == "true"){
+                      if (favourite == "true") {
                         setState(() {
                           favourite = "false";
                         });
@@ -122,7 +125,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
               ),
               floatingActionButton: FloatingActionButton(
                 shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(15))),
+                    borderRadius: BorderRadius.all(Radius.circular(15))),
                 onPressed: () {
                   final note = DataBaseNote(
                       text: _textController.text,
@@ -161,19 +164,88 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                   ),
                   Row(
                     children: [
+                      const Text("Do you want to have list in your note"),
+                      Switch(
+                        value: listSwitch,
+                        onChanged: (value) {
+                          setState(() {
+                            if (value == true) {
+                              _listNameController = TextEditingController();
+                            } else {
+                              _listNameController.dispose();
+                            }
+                            listSwitch = value;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  Builder(
+                    builder: (context) {
+                      if (listSwitch == true) {
+                        return Column(
+                          children: [
+                            TextField(
+                              controller: _listNameController,
+                              maxLines: 1,
+                              decoration: const InputDecoration(
+                                  hintText: "Name of your note's list"),
+                            ),
+                            Row(
+                              children: [
+                                TextButton(
+                                    onPressed: () {},
+                                    child: const Text("Add new item")),
+                                PopupMenuButton(
+                                  itemBuilder: (context) {
+                                    return <PopupMenuEntry<NoteListOrderItems>>[
+                                      PopupMenuItem<NoteListOrderItems>(
+                                        value: NoteListOrderItems
+                                            .alphabeticallyDown,
+                                        child: Row(
+                                          children: const [
+                                            Text("Alphabetically"),
+                                            Icon(Icons.arrow_downward),
+                                          ],
+                                        ),
+                                      ),
+                                      PopupMenuItem<NoteListOrderItems>(
+                                        value:
+                                            NoteListOrderItems.alphabeticallyUp,
+                                        child: Row(
+                                          children: const [
+                                            Text("Alphabetically"),
+                                            Icon(Icons.arrow_upward),
+                                          ],
+                                        ),
+                                      ),
+                                    ];
+                                  },
+                                  child: const Icon(Icons.sort),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      }
+                      return Container();
+                    },
+                  ),
+                  Row(
+                    children: [
                       const Text("Do you want to be notify about this note?"),
                       Switch(
-                        value: rememberDateSwich,
+                        value: rememberDateSwitch,
                         onChanged: (value) {
                           setState(
                             () {
                               if (value == true) {
                                 rememberDate =
                                     DateTime.now().add(const Duration(days: 1));
-                                rememberDateSwich = true;
+                                rememberDateSwitch = true;
                               } else {
                                 rememberDate = null;
-                                rememberDateSwich = false;
+                                rememberDateSwitch = false;
                               }
                             },
                           );
@@ -183,7 +255,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                   ),
                   Builder(
                     builder: ((context) {
-                      if (!rememberDateSwich) {
+                      if (!rememberDateSwitch) {
                         return const Text("There won't be any notification");
                       }
                       return Column(

@@ -6,7 +6,7 @@ import 'package:notes/services/database_note.dart';
 import 'package:notes/services/notes_service.dart';
 import 'package:notes/views/notes/notes_bloc.dart';
 import 'package:notes/views/notes/notes_event.dart';
-import 'package:notes/widgets/best_note.dart';
+import 'package:notes/widgets/note.dart';
 
 import 'notes_state.dart';
 
