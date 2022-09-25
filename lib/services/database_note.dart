@@ -3,6 +3,7 @@ class DataBaseNote {
   final String text;
   final String title;
   final String favourite;
+  final bool archived;
   final DateTime date;
   late final DateTime? rememberdate;
   final String? listName;
@@ -17,6 +18,7 @@ class DataBaseNote {
     this.id,
     this.listName,
     this.listItems,
+    this.archived = false,
   });
 
   @override
