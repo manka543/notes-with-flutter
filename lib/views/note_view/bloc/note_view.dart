@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/const/routes.dart';
 import 'package:notes/fuctions/date_time_to_string.dart';
-import 'package:notes/fuctions/to_bool.dart';
-import 'package:notes/services/notes_service.dart';
 import 'package:notes/services/to_icon.dart';
 import 'package:notes/views/note_view/bloc/note_view_bloc.dart';
 import 'package:notes/widgets/note_list_item.dart';
@@ -40,6 +38,7 @@ class _NoteViewState extends State<NoteView> {
               body: const Center(child: CircularProgressIndicator()),
             );
           } else if (state is NoteViewValid) {
+            print(state.note);
             return Scaffold(
               appBar: AppBar(
                 title: const Text("Note Details"),

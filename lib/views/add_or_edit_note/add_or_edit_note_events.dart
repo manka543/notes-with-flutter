@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:notes/services/database_note.dart';
+import 'package:notes/widgets/note_list_item.dart';
 
 @immutable
 abstract class AddOrEditNoteEvent {
@@ -33,4 +34,22 @@ class GetNoteEvent extends AddOrEditNoteEvent {
 
 class FinalEditEvent extends AddOrEditNoteEvent {
   const FinalEditEvent(super.note);
+}
+
+class CreateNoteListItem extends AddOrEditNoteEvent {
+  final DataBaseNoteListItem item;
+  final int noteId;
+  const CreateNoteListItem(this.item, this.noteId) : super(null);
+}
+
+class DeleteNoteListItem extends AddOrEditNoteEvent {
+  final int id;
+  final int noteId;
+  const DeleteNoteListItem(this.id, this.noteId) : super(null);
+}
+
+class EditNoteListItem extends AddOrEditNoteEvent {
+  final DataBaseNoteListItem item;
+  final int noteId;
+  const EditNoteListItem(this.item, this.noteId) : super(null);
 }

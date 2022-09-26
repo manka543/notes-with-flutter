@@ -18,7 +18,7 @@ class AddOrEditNoteView extends StatefulWidget {
 class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
   late final TextEditingController _titleController;
   late final TextEditingController _textController;
-  late TextEditingController _listNameController;
+  late TextEditingController? _listNameController;
   DateTime? rememberDate;
   bool rememberDateSwitch = false;
   int? id;
@@ -36,6 +36,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
   void dispose() {
     _titleController.dispose();
     _textController.dispose();
+    _listNameController?.dispose();
     super.dispose();
   }
 
@@ -59,7 +60,14 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
               id = state.note!.id;
               _titleController.text = state.note!.title;
               _textController.text = state.note!.text;
+              if(state.note!.listName != null || state.note!.listItems != null){
+                print("i am setting listSwitch");
+                listSwitch = true;
+                _listNameController = TextEditingController();
+                _listNameController!.text = state.note!.listName ?? "";
+              }  
               if (state.note!.rememberdate != null) {
+                print("i am setting remember date switch");
                 rememberDate = state.note!.rememberdate;
                 rememberDateSwitch = true;
               }
@@ -90,7 +98,11 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                     favourite: favourite,
                     date: DateTime.now(),
                     rememberdate: rememberDate,
-                    id: id);
+                    id: id,
+                    archived: false,
+                    listItems: null,
+                    listName: _listNameController?.text,
+                    );
                 context.read<AddOrEditNoteBloc>().add(FinalEditEvent(note));
               }
               return Future.value(false);
@@ -128,12 +140,15 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                     borderRadius: BorderRadius.all(Radius.circular(15))),
                 onPressed: () {
                   final note = DataBaseNote(
-                      text: _textController.text,
-                      title: _titleController.text,
-                      favourite: favourite,
-                      date: DateTime.now(),
-                      rememberdate: rememberDate,
-                      id: id);
+                    text: _textController.text,
+                    title: _titleController.text,
+                    favourite: favourite,
+                    date: DateTime.now(),
+                    rememberdate: rememberDate,
+                    id: id,
+                    archived: false,
+                    listItems: null,
+                    listName: _listNameController?.text);
                   context.read<AddOrEditNoteBloc>().add(EditNoteEvent(note));
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -150,13 +165,13 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
               body: ListView(
                 padding: const EdgeInsets.all(15),
                 children: [
-                  const Text("Title:"),
+                  const Text("Title:", style: TextStyle(fontSize: 22, fontWeight: FontWeight.w300),),
                   TextField(
                     controller: _titleController,
                     maxLength: 60,
                     decoration: const InputDecoration(hintText: "Title"),
                   ),
-                  const Text("Text:"),
+                  const Text("Text:", style: TextStyle(fontSize: 22, fontWeight: FontWeight.w300),),
                   TextField(
                     controller: _textController,
                     maxLines: null,
@@ -166,13 +181,15 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                     children: [
                       const Text("Do you want to have list in your note"),
                       Switch(
+                        activeColor: Colors.yellow,
                         value: listSwitch,
                         onChanged: (value) {
                           setState(() {
                             if (value == true) {
                               _listNameController = TextEditingController();
+                              _listNameController!.text = state.note!.listName ?? "";
                             } else {
-                              _listNameController.dispose();
+                              _listNameController?.dispose();
                             }
                             listSwitch = value;
                           });
@@ -184,10 +201,12 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                     builder: (context) {
                       if (listSwitch == true) {
                         return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            const Text("Title of list:", style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300),),
                             TextField(
                               controller: _listNameController,
-                              maxLines: 1,
+                              maxLength: 60,
                               decoration: const InputDecoration(
                                   hintText: "Name of your note's list"),
                             ),
@@ -230,11 +249,12 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                       }
                       return Container();
                     },
-                  ),
+                  ), // TODO: Here add notelist items
                   Row(
                     children: [
                       const Text("Do you want to be notify about this note?"),
                       Switch(
+                        activeColor: Colors.yellow,
                         value: rememberDateSwitch,
                         onChanged: (value) {
                           setState(
