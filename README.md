@@ -14,3 +14,6 @@ Flutter project of app which is created to keeping user's notes and sending loca
 4. list notes and NoteListItem as element of this list
 5. repeating notifications
 6. check all stuff in notes_service.dart
+
+### Notes
+1. Pozostało ci tylko dodać buttony w note view do list itemów i chyba będzie git. Potem możesz zrobić jakieś większe testy czy wszystko działa poprawnie i możesz sie zająć zmienianiem powiadomien 

@@ -190,7 +190,7 @@ class NotesService {
         DataBaseNote(
             title: rawNote[title].toString(),
             text: rawNote[text].toString(),
-            favourite: rawNote[favourite].toString(),
+            favourite: toBool(rawNote[favourite] as String),
             date: DateTime.parse(rawNote[date].toString()),
             rememberdate: DateTime.tryParse(rawNote[rememberDate].toString()),
             id: int.parse(rawNote[noteId].toString()),
@@ -211,22 +211,13 @@ class NotesService {
     final rawNote = rawNotes[0];
     List<DataBaseNoteListItem>? items;
     if (rawNote[list] == "true") {
-      final rawListItems = await database
-          .rawQuery("SELECT * FROM $itemsTable WHERE $itemNoteID = $id");
-      items = [];
-      for (var rawItem in rawListItems) {
-        items.add(DataBaseNoteListItem(
-          rawItem[itemText] as String,
-          toBool(rawItem[itemDone] as String),
-          rawItem[itemId] as int,
-        ));
-      }
+      items = await getAllListItems(id: id);
     }
 
     return DataBaseNote(
       title: rawNote[title].toString(),
       text: rawNote[text].toString(),
-      favourite: rawNote[favourite].toString(),
+      favourite: toBool(rawNote[favourite] as String),
       date: DateTime.parse(rawNote[date].toString()),
       rememberdate: DateTime.tryParse(rawNote[rememberDate].toString()),
       id: int.parse(rawNote[noteId].toString()),
@@ -234,6 +225,22 @@ class NotesService {
       listItems: items,
       archived: toBool(rawNote[archived] as String),
     );
+  }
+
+  Future<List<DataBaseNoteListItem>?> getAllListItems({required id}) async {
+    await _ensureDatabaseOpen();
+    final database = getDatabase();
+    List<DataBaseNoteListItem>? items = [];
+    final rawListItems = await database
+        .rawQuery("SELECT * FROM $itemsTable WHERE $itemNoteID = $id");
+    for (var rawItem in rawListItems) {
+      items.add(DataBaseNoteListItem(
+        rawItem[itemText] as String,
+        toBool(rawItem[itemDone] as String),
+        rawItem[itemId] as int,
+      ));
+    }
+    return items;
   }
 
   Future<DataBaseNote> updateNote({required DataBaseNote note}) async {
@@ -246,7 +253,7 @@ class NotesService {
           title: note.title,
           text: note.text,
           rememberDate: note.rememberdate.toString(),
-          favourite: note.favourite,
+          favourite: note.favourite.toString(),
           list: note.listItems?.isNotEmpty.toString() ?? false.toString(),
           listTitle: note.listName,
           archived: note.archived.toString(),
@@ -256,19 +263,54 @@ class NotesService {
     if (updateCount != 1) {
       throw CouldNotUpdateNoteException();
     }
-    if (oldNote.listItems != null && oldNote.listItems!.isNotEmpty) {
-      final deleteCount = await database
-          .rawDelete("DELETE FROM $itemsTable WHERE $itemNoteID = ${note.id}");
-      if (deleteCount != oldNote.listItems!.length) {
-        throw CouldNotDeleteException();
+    // if (oldNote.listItems != null && oldNote.listItems!.isNotEmpty) {
+    //   final deleteCount = await database
+    //       .rawDelete("DELETE FROM $itemsTable WHERE $itemNoteID = ${note.id}");
+    //   if (deleteCount != oldNote.listItems!.length) {
+    //     throw CouldNotDeleteException();
+    //   }
+    // }
+    // if (note.listItems != null) {
+    //   for (var item in note.listItems!) {
+    //     await createListItem(item: item, noteID: note.id!);
+    //   }
+    // }
+    if (note.listItems == null) {
+      if (oldNote.listItems != null) {
+        final itemDeleteCount = await database.rawDelete(
+            "DELETE FROM $itemsTable WHERE $itemNoteID = ${note.id}");
+        if (itemDeleteCount != oldNote.listItems?.length) {
+          throw CouldNotDeleteException();
+        }
       }
+    } else {
+      note.listItems?.forEach((element) async {
+        if (element.id == null) {
+          createListItem(item: element, noteID: note.id!);
+        } else {
+          if (oldNote.listItems?.contains(element) ?? false == false) {
+            final itemUpdateCount = await database.rawUpdate(
+              "UPDATE $itemsTable SET $itemDone = ?, $itemText = ? WHERE $itemId = ${element.id}",
+              [
+                element.done,
+                element.text,
+              ],
+            );
+            if (itemUpdateCount != 1) {
+              throw CouldNotUpdateNoteException();
+            }
+          }
+          oldNote.listItems?.removeWhere((oldElement) => oldElement.id == element.id);
+        }
+      });
+      oldNote.listItems?.forEach((element1) async {
+        if (await database.rawDelete(
+                "DELETE FROM $itemsTable WHERE $itemId = ${element1.id}") !=
+            1) {
+          throw CouldNotUpdateNoteException();
+        }
+      });
     }
-    if (note.listItems != null) {
-      for (var item in note.listItems!) {
-        await createListItem(item: item, noteID: note.id!);
-      }
-    }
-
     if (oldNote.rememberdate != null &&
         oldNote.rememberdate!.isAfter(DateTime.now())) {
       cancelSheduledNotification(id: note.id!);
@@ -307,9 +349,9 @@ class NotesService {
         note.text,
         note.date.toString(),
         note.rememberdate.toString(),
-        note.favourite,
+        note.favourite.toString(),
         note.listName,
-        note.listItems?.isNotEmpty ?? false,
+        note.listItems?.isNotEmpty ?? false.toString(),
         note.archived.toString(),
       ],
     );
@@ -348,8 +390,8 @@ class NotesService {
     final deletedNote = await getNote(id: id);
     if (deletedNote.listItems?.isNotEmpty ?? false) {
       final deletedItemCount = database.rawDelete(
-              "DELETE FROM $itemsTable WHERE $itemNoteID = ${deletedNote.id}")
-          as int?;
+          "DELETE FROM $itemsTable WHERE $itemNoteID = ${deletedNote.id}");
+      // ignore: unrelated_type_equality_checks
       if (deletedItemCount != deletedNote.listItems?.length) {
         throw CouldNotDeleteException();
       }
@@ -384,11 +426,11 @@ class NotesService {
       "INSERT INTO $itemsTable($itemText, $itemDone, $itemNoteID) VALUES(?,?,?)",
       [
         item.text,
-        item.done,
+        item.done.toString(),
         noteID,
       ],
     );
-    if (newItemId != 0) {
+    if (newItemId == 0) {
       throw CouldNotCreateNoteException();
     }
     return await getListItem(id: newItemId);
@@ -411,7 +453,11 @@ class NotesService {
     await _ensureDatabaseOpen();
     final database = getDatabase();
     final updateCount = await database.rawUpdate(
-        "UPDATE $itemsTable SET $itemText = ?, $itemDone = ?, $itemNoteID = ? WHERE $itemId = ${item.id}");
+        "UPDATE $itemsTable SET $itemText = ?, $itemDone = ? WHERE $itemId = ${item.id}",
+        [
+          item.text,
+          item.done,
+        ]);
     if (updateCount != 1) {
       throw CouldNotUpdateNoteException();
     }

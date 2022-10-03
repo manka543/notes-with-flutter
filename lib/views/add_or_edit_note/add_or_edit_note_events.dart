@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:notes/services/database_note.dart';
-import 'package:notes/widgets/note_list_item.dart';
 
 @immutable
 abstract class AddOrEditNoteEvent {

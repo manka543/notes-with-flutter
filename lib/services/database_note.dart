@@ -2,7 +2,7 @@ class DataBaseNote {
   final int? id;
   final String text;
   final String title;
-  final String favourite;
+  final bool favourite;
   final bool archived;
   final DateTime date;
   late final DateTime? rememberdate;

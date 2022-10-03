@@ -19,7 +19,7 @@ class _NoteListItemState extends State<NoteListItem> {
           IconButton(onPressed: () {
             
           }, icon: const Icon(Icons.done),),
-          const Expanded(child: Text("to jest testowy tekst itemu z listy")),
+          Expanded(child: Text(widget.item.text ?? "There is no Text")),
           IconButton(onPressed: () {
             
           }, icon: const Icon(Icons.delete))

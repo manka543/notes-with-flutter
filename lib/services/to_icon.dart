@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-IconData toIcon(String favourite) {
+IconData toIcon(bool favourite) {
   switch (favourite) {
-    case "false":
+    case false:
       return Icons.star_outline_rounded;
-    case "true":
+    case true:
       return Icons.star_rounded;
     default:
       return Icons.error;

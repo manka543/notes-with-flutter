@@ -4,7 +4,6 @@ import 'package:notes/services/notes_service.dart';
 import 'package:notes/services/notes_service_exeptions.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_events.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_states.dart';
-import 'package:notes/widgets/note_list_item.dart';
 
 class AddOrEditNoteBloc extends Bloc<AddOrEditNoteEvent, AddOrEditNoteState> {
   AddOrEditNoteBloc() : super(const AddOrEditNoteInitialState(null)) {
@@ -71,7 +70,7 @@ class AddOrEditNoteBloc extends Bloc<AddOrEditNoteEvent, AddOrEditNoteState> {
             note: DataBaseNote(
           title: "",
           text: "",
-          favourite: "false",
+          favourite: false,
           date: DateTime.now(),
         ));
         emit(AddOrEditNoteStateValid(creatednote));

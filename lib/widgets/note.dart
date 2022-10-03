@@ -1,8 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/const/routes.dart';
-import 'package:notes/fuctions/to_bool.dart';
 import 'package:notes/services/database_note.dart';
 import 'package:notes/services/to_icon.dart';
 import 'package:notes/views/notes/notes_bloc.dart';
@@ -35,7 +33,7 @@ class _NoteState extends State<Note> {
                     color: Theme.of(context).primaryColor,
                     borderRadius:
                         const BorderRadius.vertical(top: Radius.circular(15)))
-                : toBool(widget.note.favourite)
+                : widget.note.favourite
                     ? BoxDecoration(
                         color: Theme.of(context).hintColor,
                         borderRadius: BorderRadius.circular(15))
@@ -49,7 +47,7 @@ class _NoteState extends State<Note> {
                         padding: const EdgeInsets.all(8.0),
                         child: IconButton(
                           onPressed: () {
-                            if (widget.note.favourite == "true") {
+                            if (widget.note.favourite) {
                               context.read<NotesBloc>().add(
                                   ChangeFavourity("false", widget.note.id!));
                             } else {
@@ -83,7 +81,7 @@ class _NoteState extends State<Note> {
                         padding: const EdgeInsets.all(8.0),
                         child: IconButton(
                           onPressed: () {
-                            if (widget.note.favourite == "true") {
+                            if (widget.note.favourite) {
                               context.read<NotesBloc>().add(
                                   ChangeFavourity("false", widget.note.id!));
                             } else {

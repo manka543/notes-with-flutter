@@ -42,7 +42,7 @@ class NoteViewBloc extends Bloc<NoteViewEvent, NoteViewState> {
             title: "Test notatki z listą",
             text:
                 "to jest bardzo dlugi tekst notatki z lista ze no takie oro ze az nie ma sily no nie no nie idziesz do domu nie ma co",
-            favourite: 'true',
+            favourite: true,
             date: DateTime.now(),
             listName: "To jest bardzo dluga nazwa listy",
             listItems: const [

@@ -38,14 +38,13 @@ class _NoteViewState extends State<NoteView> {
               body: const Center(child: CircularProgressIndicator()),
             );
           } else if (state is NoteViewValid) {
-            print(state.note);
             return Scaffold(
               appBar: AppBar(
                 title: const Text("Note Details"),
                 actions: [
                   IconButton(
                     onPressed: (() {
-                      if (state.note.favourite == "true") {
+                      if (state.note.favourite == true) {
                         context
                             .read<NoteViewBloc>()
                             .add(ChangeFavourity("false", state.note.id!));

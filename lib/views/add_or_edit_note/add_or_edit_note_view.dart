@@ -7,6 +7,7 @@ import 'package:notes/services/to_icon.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_bloc.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_events.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_states.dart';
+import 'package:notes/widgets/add_or_edit_note_list_item.dart';
 
 class AddOrEditNoteView extends StatefulWidget {
   const AddOrEditNoteView({Key? key}) : super(key: key);
@@ -19,10 +20,11 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
   late final TextEditingController _titleController;
   late final TextEditingController _textController;
   late TextEditingController? _listNameController;
+  List<DataBaseNoteListItem>? itemList = [];
   DateTime? rememberDate;
   bool rememberDateSwitch = false;
   int? id;
-  String favourite = "false";
+  bool favourite = false;
   bool listSwitch = false;
 
   @override
@@ -36,7 +38,9 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
   void dispose() {
     _titleController.dispose();
     _textController.dispose();
+    if(_listNameController != null){
     _listNameController?.dispose();
+    }
     super.dispose();
   }
 
@@ -60,17 +64,18 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
               id = state.note!.id;
               _titleController.text = state.note!.title;
               _textController.text = state.note!.text;
-              if(state.note!.listName != null || state.note!.listItems != null){
-                print("i am setting listSwitch");
+              if (state.note!.listName != null ||
+                  state.note!.listItems != null) {
                 listSwitch = true;
                 _listNameController = TextEditingController();
                 _listNameController!.text = state.note!.listName ?? "";
-              }  
+              }
               if (state.note!.rememberdate != null) {
-                print("i am setting remember date switch");
                 rememberDate = state.note!.rememberdate;
                 rememberDateSwitch = true;
               }
+              //print(state.note!.listItems);
+              itemList = state.note!.listItems;
               favourite = state.note!.favourite;
             });
           } else if (state is DeletedState || state is UpdatedState) {
@@ -93,16 +98,16 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                 context.read<AddOrEditNoteBloc>().add(DeleteNoteEvent(id));
               } else {
                 final note = DataBaseNote(
-                    text: _textController.text,
-                    title: _titleController.text,
-                    favourite: favourite,
-                    date: DateTime.now(),
-                    rememberdate: rememberDate,
-                    id: id,
-                    archived: false,
-                    listItems: null,
-                    listName: _listNameController?.text,
-                    );
+                  text: _textController.text,
+                  title: _titleController.text,
+                  favourite: favourite,
+                  date: DateTime.now(),
+                  rememberdate: rememberDate,
+                  id: id,
+                  archived: false,
+                  listItems: itemList,
+                  listName: _listNameController?.text,
+                );
                 context.read<AddOrEditNoteBloc>().add(FinalEditEvent(note));
               }
               return Future.value(false);
@@ -113,13 +118,13 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                 actions: <Widget>[
                   IconButton(
                     onPressed: (() {
-                      if (favourite == "true") {
+                      if (favourite) {
                         setState(() {
-                          favourite = "false";
+                          favourite = false;
                         });
                       } else {
                         setState(() {
-                          favourite = "true";
+                          favourite = true;
                         });
                       }
                     }),
@@ -140,15 +145,15 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                     borderRadius: BorderRadius.all(Radius.circular(15))),
                 onPressed: () {
                   final note = DataBaseNote(
-                    text: _textController.text,
-                    title: _titleController.text,
-                    favourite: favourite,
-                    date: DateTime.now(),
-                    rememberdate: rememberDate,
-                    id: id,
-                    archived: false,
-                    listItems: null,
-                    listName: _listNameController?.text);
+                      text: _textController.text,
+                      title: _titleController.text,
+                      favourite: favourite,
+                      date: DateTime.now(),
+                      rememberdate: rememberDate,
+                      id: id,
+                      archived: false,
+                      listItems: itemList,
+                      listName: _listNameController?.text);
                   context.read<AddOrEditNoteBloc>().add(EditNoteEvent(note));
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -165,13 +170,19 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
               body: ListView(
                 padding: const EdgeInsets.all(15),
                 children: [
-                  const Text("Title:", style: TextStyle(fontSize: 22, fontWeight: FontWeight.w300),),
+                  const Text(
+                    "Title:",
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w300),
+                  ),
                   TextField(
                     controller: _titleController,
                     maxLength: 60,
                     decoration: const InputDecoration(hintText: "Title"),
                   ),
-                  const Text("Text:", style: TextStyle(fontSize: 22, fontWeight: FontWeight.w300),),
+                  const Text(
+                    "Text:",
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w300),
+                  ),
                   TextField(
                     controller: _textController,
                     maxLines: null,
@@ -187,9 +198,12 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                           setState(() {
                             if (value == true) {
                               _listNameController = TextEditingController();
-                              _listNameController!.text = state.note!.listName ?? "";
+                              _listNameController!.text =
+                                  state.note!.listName ?? "";
+                              itemList = [];
                             } else {
                               _listNameController?.dispose();
+                              itemList = null;
                             }
                             listSwitch = value;
                           });
@@ -203,7 +217,11 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text("Title of list:", style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300),),
+                            const Text(
+                              "Title of list:",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w300),
+                            ),
                             TextField(
                               controller: _listNameController,
                               maxLength: 60,
@@ -213,7 +231,17 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                             Row(
                               children: [
                                 TextButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      // No więc generalnie problem jest taki ze pod tym guzikiem ciągnie potem notatke z databasa
+                                      // a moze tam byc jeszcze nie zupdatowana no i cofa progress więc musisz wypierdolic dodawanie 
+                                      // itemów blocem i dodawac je lokalnie w  tym screenie a na koniec podczas updatowania notatki
+                                      // to juz można miec wyjebane z tym co sie dzieje nie musi być jakoś super zoptymalizowane tylko
+                                      // pamietaj ze musisz dodawac itemy gdzie id == null i gdzie id != null updatowac i reszte wypierdolic
+                                      itemList ??= [];
+                                      setState(() {
+                                      itemList!.add(const DataBaseNoteListItem("",false,null));
+                                      });
+                                    },
                                     child: const Text("Add new item")),
                                 PopupMenuButton(
                                   itemBuilder: (context) {
@@ -249,7 +277,31 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                       }
                       return Container();
                     },
-                  ), // TODO: Here add notelist items
+                  ),
+                  Builder(
+                    builder: (context) {
+                      List<Widget>? items;
+                      if (state is AddOrEditNoteStateValid &&
+                          itemList != null) {
+                        items = [];
+                        for (var i = 0; i < itemList!.length; i++) {
+                          items.add(AddOrEditNoteListItem(
+                              item: itemList![i],
+                              getItem: (DataBaseNoteListItem itemA) {
+                                itemList![i] = itemA; 
+                              },
+                              deleteItem: () {
+                                setState(() {
+                                  itemList!.removeAt(i);
+                                });
+                              }),);
+                        }
+                      }
+                      return Column(
+                        children: items ?? [],
+                      );
+                    },
+                  ),
                   Row(
                     children: [
                       const Text("Do you want to be notify about this note?"),
