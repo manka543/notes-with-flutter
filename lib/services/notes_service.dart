@@ -300,7 +300,8 @@ class NotesService {
               throw CouldNotUpdateNoteException();
             }
           }
-          oldNote.listItems?.removeWhere((oldElement) => oldElement.id == element.id);
+          oldNote.listItems
+              ?.removeWhere((oldElement) => oldElement.id == element.id);
         }
       });
       oldNote.listItems?.forEach((element1) async {
@@ -462,5 +463,18 @@ class NotesService {
       throw CouldNotUpdateNoteException();
     }
     return await getListItem(id: item.id!);
+  }
+
+  Future<DataBaseNoteListItem> changeItemProgress(
+      {required int id, required bool progress}) async {
+    await _ensureDatabaseOpen();
+    final database = getDatabase();
+    final updateCount = await database.rawUpdate(
+        "UPDATE $itemsTable SET $itemDone = ? WHERE $itemId = ?",
+        [progress.toString(), id]);
+    if (updateCount != 1) {
+      throw CouldNotUpdateNoteException();
+    }
+    return await getListItem(id: id);
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/services/database_note.dart';
 import 'package:notes/services/notes_service.dart';
 import 'package:notes/services/notes_service_exeptions.dart';
+import 'package:notes/views/notes/notes_event.dart';
 
 part 'note_view_event.dart';
 part 'note_view_state.dart';
@@ -37,25 +38,32 @@ class NoteViewBloc extends Bloc<NoteViewEvent, NoteViewState> {
             favourity: event.favourity,
             id: event.id,
           );
-          //emit(NoteViewValid(await notesService.getNote(id: event.id)));
-          emit(NoteViewValid(DataBaseNote(
-            title: "Test notatki z listą",
-            text:
-                "to jest bardzo dlugi tekst notatki z lista ze no takie oro ze az nie ma sily no nie no nie idziesz do domu nie ma co",
-            favourite: true,
-            date: DateTime.now(),
-            listName: "To jest bardzo dluga nazwa listy",
-            listItems: const [
-              DataBaseNoteListItem("text pierwszego itemu z listy", true, 0),
-              DataBaseNoteListItem(
-                  "to jest troszeczke dluzszy tekst 2 itemu", true, 1),
-              DataBaseNoteListItem("kup maslo 2 kostki", false, 2)
-            ],
-          )));
+          emit(NoteViewValid(await notesService.getNote(id: event.id)));
         } on CouldNotUpdateNoteException {
           emit(NoteViewError());
         }
       },
     );
+    on<ChangeItemProgres>((event, emit) async {
+      final NotesService notesService = NotesService();
+      try {
+        final updatedItem = await notesService.changeItemProgress(id: event.id, progress: event.progress);
+        final index = event.note.listItems!.indexWhere((element) => element.id == event.id,);
+        event.note.listItems![index] = updatedItem;
+      } on CouldNotUpdateNoteException {
+        emit(NoteViewError());
+      }
+      emit(NoteViewValid(event.note));
+    });
+    on<DeleteItem>((event, emit) async {
+      final NotesService notesService = NotesService();
+      try {
+        await notesService.deleteListItem(id: event.id);
+      } on CouldNotUpdateNoteException {
+        emit(NoteViewError());
+      }
+      event.note.listItems!.removeWhere((element) => element.id == event.id);
+      emit(NoteViewValid(event.note));
+    });
   }
 }

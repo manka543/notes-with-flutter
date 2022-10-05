@@ -123,7 +123,11 @@ class _NoteViewState extends State<NoteView> {
                         var widgets = <Widget>[];
                         widgets.add(const Divider());
                         for (var noteItem in state.note.listItems!) {
-                          widgets.add(NoteListItem(item: noteItem));
+                          widgets.add(NoteListItem(item: noteItem, changeItemProgress: (done, id) {
+                            context.read<NoteViewBloc>().add(ChangeItemProgres(progress: done, id: id, note: state.note));
+                          }, deleteItem: (id) {
+                            context.read<NoteViewBloc>().add(DeleteItem(id: id, note: state.note));
+                          },));
                         }
                         return Column(
                           children: widgets,
