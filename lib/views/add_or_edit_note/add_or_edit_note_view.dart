@@ -19,7 +19,7 @@ class AddOrEditNoteView extends StatefulWidget {
 class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
   late final TextEditingController _titleController;
   late final TextEditingController _textController;
-  late TextEditingController? _listNameController;
+  late final TextEditingController _listNameController;
   List<DataBaseNoteListItem>? itemList = [];
   DateTime? rememberDate;
   bool rememberDateSwitch = false;
@@ -31,6 +31,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
   void initState() {
     _titleController = TextEditingController();
     _textController = TextEditingController();
+    _listNameController = TextEditingController();
     super.initState();
   }
 
@@ -38,9 +39,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
   void dispose() {
     _titleController.dispose();
     _textController.dispose();
-    if(_listNameController != null){
-    _listNameController?.dispose();
-    }
+    _listNameController.dispose();
     super.dispose();
   }
 
@@ -67,8 +66,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
               if (state.note!.listName != null ||
                   state.note!.listItems != null) {
                 listSwitch = true;
-                _listNameController = TextEditingController();
-                _listNameController!.text = state.note!.listName ?? "";
+                _listNameController.text = state.note!.listName ?? "";
               }
               if (state.note!.rememberdate != null) {
                 rememberDate = state.note!.rememberdate;
@@ -97,6 +95,15 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
               if (_titleController.text == "" && _textController.text == "") {
                 context.read<AddOrEditNoteBloc>().add(DeleteNoteEvent(id));
               } else {
+                String? listName;
+                if(_listNameController.text == ""){
+                  listName = null;
+                } else {
+                  listName = _listNameController.text;
+                }
+                if(itemList?.isEmpty ?? false){
+                  itemList = null;
+                }
                 final note = DataBaseNote(
                   text: _textController.text,
                   title: _titleController.text,
@@ -106,7 +113,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                   id: id,
                   archived: false,
                   listItems: itemList,
-                  listName: _listNameController?.text,
+                  listName: listName,
                 );
                 context.read<AddOrEditNoteBloc>().add(FinalEditEvent(note));
               }
@@ -153,7 +160,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                       id: id,
                       archived: false,
                       listItems: itemList,
-                      listName: _listNameController?.text);
+                      listName: _listNameController.text);
                   context.read<AddOrEditNoteBloc>().add(EditNoteEvent(note));
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -197,12 +204,11 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                         onChanged: (value) {
                           setState(() {
                             if (value == true) {
-                              _listNameController = TextEditingController();
-                              _listNameController!.text =
+                              _listNameController.text =
                                   state.note!.listName ?? "";
                               itemList = [];
                             } else {
-                              _listNameController?.dispose();
+                              _listNameController.text = "";
                               itemList = null;
                             }
                             listSwitch = value;
