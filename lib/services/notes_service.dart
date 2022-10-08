@@ -71,6 +71,15 @@ class NotesService {
           color: Colors.yellow,
           category: NotificationCategory.Reminder,
           notificationLayout: NotificationLayout.Default),
+      //     schedule: NotificationAndroidCrontab(
+      //   allowWhileIdle: true,
+      //   repeats: false,
+      //   crontabExpression: "${date.second} ${date.minute} ${date.hour} ? * * *",
+      //   initialDateTime: date.subtract(Duration(hours: date.hour, minutes: date.minute)),
+      //   expirationDateTime: date.add(const Duration(days: 365)),
+      //   preciseAlarm: true,
+      //   // crontabExpression: "5 42 22 ? * MON-FRI *",
+      // ),
       schedule: NotificationCalendar(
         allowWhileIdle: true,
         year: date.year,
