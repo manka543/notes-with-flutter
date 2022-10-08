@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/services/database_note.dart';
 import 'package:notes/services/notes_service.dart';
 import 'package:notes/services/notes_service_exeptions.dart';
-import 'package:notes/views/notes/notes_event.dart';
 
 part 'note_view_event.dart';
 part 'note_view_state.dart';

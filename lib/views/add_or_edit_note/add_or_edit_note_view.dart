@@ -59,11 +59,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
               context.read<AddOrEditNoteBloc>().add(GetNoteEvent(id!));
             }
           } else if (state is AddOrEditNoteStateValid) {
-            print(
-            (state.note!.listName != null && state.note!.listName != '') ||
-                  (state.note!.listItems != null && state.note!.listItems != []));
             setState(() {
-              print(state.note);
               id = state.note!.id;
               _titleController.text = state.note!.title;
               _textController.text = state.note!.text;
