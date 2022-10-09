@@ -59,8 +59,8 @@ class NotesService {
 
   Future<void> showScheduledNotification(
       {required int id,
-      required String title,
-      required String text,
+      required String? title,
+      required String? text,
       required DateTime date}) async {
     await AwesomeNotifications().createNotification(
       content: NotificationContent(
@@ -74,7 +74,7 @@ class NotesService {
       //     schedule: NotificationAndroidCrontab(
       //   allowWhileIdle: true,
       //   repeats: false,
-      //   crontabExpression: "${date.second} ${date.minute} ${date.hour} ? * * *",
+      //   preciseSchedules: [date],
       //   initialDateTime: date.subtract(Duration(hours: date.hour, minutes: date.minute)),
       //   expirationDateTime: date.add(const Duration(days: 365)),
       //   preciseAlarm: true,
@@ -82,6 +82,7 @@ class NotesService {
       // ),
       schedule: NotificationCalendar(
         allowWhileIdle: true,
+        preciseAlarm: true,
         year: date.year,
         month: date.month,
         day: date.day,
@@ -113,41 +114,16 @@ class NotesService {
 
   void createNotificationListeners(BuildContext context) {
     AwesomeNotifications().actionStream.listen((notification) async {
+      Duration? pressedDuration;
       if (notification.buttonKeyPressed == "DELETE") {
         await deleteNote(id: notification.id!);
+        return;
       } else if (notification.buttonKeyPressed == "REMIND_IN_10_MIN") {
-        final note = await getNote(id: notification.id!);
-        await updateNote(
-            note: DataBaseNote(
-          title: note.title,
-          text: note.text,
-          favourite: note.favourite,
-          date: note.date,
-          rememberdate: DateTime.now().add(const Duration(minutes: 10)),
-          id: notification.id,
-        ));
+        pressedDuration = const Duration(minutes: 10);
       } else if (notification.buttonKeyPressed == "REMIND_IN_1_H") {
-        final note = await getNote(id: notification.id!);
-        await updateNote(
-            note: DataBaseNote(
-          title: note.title,
-          text: note.text,
-          favourite: note.favourite,
-          date: note.date,
-          rememberdate: DateTime.now().add(const Duration(hours: 1)),
-          id: notification.id,
-        ));
+        pressedDuration = const Duration(hours: 1);
       } else if (notification.buttonKeyPressed == "REMIND_IN_1_D") {
-        final note = await getNote(id: notification.id!);
-        await updateNote(
-            note: DataBaseNote(
-          title: note.title,
-          text: note.text,
-          favourite: note.favourite,
-          date: note.date,
-          rememberdate: DateTime.now().add(const Duration(days: 1)),
-          id: notification.id,
-        ));
+        pressedDuration = const Duration(days: 1);
       } else {
         Navigator.pushNamedAndRemoveUntil(
             context,
@@ -155,6 +131,27 @@ class NotesService {
             arguments: notification.id,
             (route) => route.isFirst);
       }
+      switch(notification.actionLifeCycle)
+        {
+        case NotificationLifeCycle.Foreground:
+        case NotificationLifeCycle.Background:
+          final note = await getNote(id: notification.id!);
+        await updateNote(
+            note: DataBaseNote(
+          title: note.title,
+          text: note.text,
+          favourite: note.favourite,
+          date: note.date,
+          rememberdate: DateTime.now().add(pressedDuration ??=  pressedDuration ?? const Duration(seconds: 0)),
+          id: notification.id,
+        ));
+          break;
+        case NotificationLifeCycle.AppKilled:
+          showScheduledNotification(id: notification.id!, title: notification.title, text: notification.body, date: DateTime.now().add(pressedDuration ??=  pressedDuration ?? const Duration(seconds: 0)));
+          break;
+        case null:
+        break;
+          }
     });
   }
 
