@@ -30,3 +30,8 @@ class ChangeFavourity extends NotesEvent {
   final int noteId;
   const ChangeFavourity(this.favourity, this.noteId);
 }
+
+class ChangeItemOrder extends NotesEvent {
+  final List<DataBaseNote> notes;
+  const ChangeItemOrder(this.notes);
+}

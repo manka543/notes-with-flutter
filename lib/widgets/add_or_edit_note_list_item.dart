@@ -50,7 +50,7 @@ class _AddOrEditNoteListItemState extends State<AddOrEditNoteListItem> {
                     done = !done!;
                   });
                   widget.getItem(DataBaseNoteListItem(
-                      _controller.text, done!, widget.item.id));
+                      text: _controller.text,done: done!,id: widget.item.id, order: widget.item.order));
                 },
                 icon: Icon(done! ? Icons.priority_high_outlined : Icons.done)),
             Expanded(
@@ -59,7 +59,7 @@ class _AddOrEditNoteListItemState extends State<AddOrEditNoteListItem> {
               decoration: const InputDecoration(hintText: "Text of item"),
               onChanged: (value) {
                 widget.getItem(DataBaseNoteListItem(
-                     value, done!, widget.item.id));
+                      text: _controller.text,done: done!,id: widget.item.id, order: widget.item.order));
               },
             )),
             IconButton(onPressed: () {

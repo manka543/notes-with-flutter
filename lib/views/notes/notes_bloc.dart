@@ -8,15 +8,17 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
   NotesBloc() : super(const NotesInitState(null)) {
     on<GetAllNotes>(
       (event, emit) async {
-        try {
+        // try {
           final NotesService notesService = NotesService();
           final notes = await notesService.getallNotes();
           emit(NotesStateValid(
             notes,
           ));
-        } catch (exception) {
-          emit(const NotesStateError(null, null, null));
-        }
+          return;
+        // } catch (exception) {
+        //   print(exception);
+        //   emit(const NotesStateError(null, null, null));
+        // }
       },
     );
     on<DeleteNote>(
@@ -29,6 +31,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
               await notesService.getallNotes(),
               CouldNotDeleteException(),
               "there was an error with deleting your note"));
+              return;
         }
         emit(NotesStateValid(await notesService.getallNotes()));
       },
@@ -40,7 +43,24 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
         emit(NotesStateValid(await notesService.getallNotes()));
       } on CouldNotUpdateNoteException {
         emit(NotesStateError(await notesService.getallNotes(), CouldNotUpdateNoteException(), "Could not change favourity of your note"));
+        return;
       }
     },);
+    on<ChangeItemOrder>((event, emit) async {
+      final NotesService notesService = NotesService();
+      for (var i = 0; i < event.notes.length; i++) {
+        if(event.notes[i].order != i){
+          try {
+          await notesService.changeNoteOrder(index: i, id: event.notes[i].id!,);
+        } on CouldNotUpdateNoteException {
+          emit(NotesStateError(await notesService.getallNotes(), CouldNotUpdateNoteException(), "Could not change notes order"));
+          return;
+        }
+        }
+
+      }
+      emit(NotesStateValid(await notesService.getallNotes()));
+      },
+    );
   }
 }

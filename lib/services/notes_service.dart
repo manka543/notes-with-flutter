@@ -17,7 +17,7 @@ class NotesService {
 
   late final String dataBasePath;
   Database? _database;
-  static String dbname = "databasenote.db";
+  static const String dbname = "databasenote.db";
 
   Future<void> open() async {
     if (_database != null) {
@@ -131,27 +131,32 @@ class NotesService {
             arguments: notification.id,
             (route) => route.isFirst);
       }
-      switch(notification.actionLifeCycle)
-        {
+      switch (notification.actionLifeCycle) {
         case NotificationLifeCycle.Foreground:
         case NotificationLifeCycle.Background:
           final note = await getNote(id: notification.id!);
-        await updateNote(
-            note: DataBaseNote(
-          title: note.title,
-          text: note.text,
-          favourite: note.favourite,
-          date: note.date,
-          rememberdate: DateTime.now().add(pressedDuration ??=  pressedDuration ?? const Duration(seconds: 0)),
-          id: notification.id,
-        ));
+          await updateNote(
+              note: DataBaseNote(
+            title: note.title,
+            text: note.text,
+            favourite: note.favourite,
+            date: note.date,
+            rememberdate: DateTime.now().add(pressedDuration ??=
+                pressedDuration ?? const Duration(seconds: 0)),
+            id: notification.id,
+          ));
           break;
         case NotificationLifeCycle.AppKilled:
-          showScheduledNotification(id: notification.id!, title: notification.title, text: notification.body, date: DateTime.now().add(pressedDuration ??=  pressedDuration ?? const Duration(seconds: 0)));
+          showScheduledNotification(
+              id: notification.id!,
+              title: notification.title,
+              text: notification.body,
+              date: DateTime.now().add(pressedDuration ??=
+                  pressedDuration ?? const Duration(seconds: 0)));
           break;
         case null:
-        break;
-          }
+          break;
+      }
     });
   }
 
@@ -194,15 +199,20 @@ class NotesService {
     for (var rawNote in rawNotes) {
       notes.add(
         DataBaseNote(
-            title: rawNote[title].toString(),
-            text: rawNote[text].toString(),
-            favourite: toBool(rawNote[favourite] as String),
-            date: DateTime.parse(rawNote[date].toString()),
-            rememberdate: DateTime.tryParse(rawNote[rememberDate].toString()),
-            id: int.parse(rawNote[noteId].toString()),
-            archived: toBool(rawNote[archived] as String)),
+          title: rawNote[title].toString(),
+          text: rawNote[text].toString(),
+          favourite: toBool(rawNote[favourite] as String),
+          date: DateTime.parse(rawNote[date].toString()),
+          rememberdate: DateTime.tryParse(rawNote[rememberDate].toString()),
+          id: int.parse(rawNote[noteId].toString()),
+          archived: toBool(rawNote[archived] as String),
+          order: rawNote[position] as int?,
+        ),
       );
     }
+    notes.sort(
+      (a, b) => a.order?.compareTo(b.order ?? b.id!) ?? a.id!.compareTo(b.order ?? b.id!),
+    );
     return notes;
   }
 
@@ -241,9 +251,10 @@ class NotesService {
         .rawQuery("SELECT * FROM $itemsTable WHERE $itemNoteID = $id");
     for (var rawItem in rawListItems) {
       items.add(DataBaseNoteListItem(
-        rawItem[itemText] as String,
-        toBool(rawItem[itemDone] as String),
-        rawItem[itemId] as int,
+        text: rawItem[itemText] as String,
+        done: toBool(rawItem[itemDone] as String),
+        id: rawItem[itemId] as int,
+        order: rawItem[itemOrder] as int,
       ));
     }
     return items;
@@ -263,6 +274,7 @@ class NotesService {
           list: note.listItems?.isNotEmpty.toString() ?? false.toString(),
           listTitle: note.listName,
           archived: note.archived.toString(),
+          position: note.order,
         },
         where: '$noteId = ?',
         whereArgs: [note.id]);
@@ -296,10 +308,11 @@ class NotesService {
         } else {
           if (oldNote.listItems?.contains(element) ?? false == false) {
             final itemUpdateCount = await database.rawUpdate(
-              "UPDATE $itemsTable SET $itemDone = ?, $itemText = ? WHERE $itemId = ${element.id}",
+              "UPDATE $itemsTable SET $itemDone = ?, $itemText = ?, $itemOrder WHERE $itemId = ${element.id}",
               [
                 element.done,
                 element.text,
+                element.order,
               ],
             );
             if (itemUpdateCount != 1) {
@@ -334,8 +347,10 @@ class NotesService {
     return await getNote(id: note.id!);
   }
 
-  Future<DataBaseNote> changeFavourity(
-      {required int id, required String favourity}) async {
+  Future<DataBaseNote> changeFavourity({
+    required int id,
+    required String favourity,
+  }) async {
     await _ensureDatabaseOpen();
     final dataBase = getDatabase();
     final updateCount = await dataBase.rawUpdate(
@@ -368,10 +383,11 @@ class NotesService {
     if (note.listItems?.isNotEmpty ?? false) {
       for (var listItem in note.listItems!) {
         final insertItemId = await database.rawInsert(
-            "INSERT INTO $itemsTable($itemText,$itemDone,$itemNoteID) VALUES(?,?,?,?)",
+            "INSERT INTO $itemsTable($itemText,$itemDone,$itemOrder,$itemNoteID) VALUES(?,?,?,?)",
             [
               listItem.text,
               listItem.done,
+              listItem.order,
               insertId,
             ]);
         if (insertItemId == 0) {
@@ -430,10 +446,11 @@ class NotesService {
     await _ensureDatabaseOpen();
     final database = getDatabase();
     final newItemId = await database.rawInsert(
-      "INSERT INTO $itemsTable($itemText, $itemDone, $itemNoteID) VALUES(?,?,?)",
+      "INSERT INTO $itemsTable($itemText, $itemDone, $itemOrder, $itemNoteID) VALUES(?,?,?,?)",
       [
         item.text,
         item.done.toString(),
+        item.order,
         noteID,
       ],
     );
@@ -450,7 +467,10 @@ class NotesService {
         .rawQuery("SELECT * FROM $itemsTable WHERE $itemId = $id");
     final rawItem = rawItems[0];
     final item = DataBaseNoteListItem(
-        rawItem[itemText] as String, toBool(rawItem[itemDone] as String), id);
+        text: rawItem[itemText] as String,
+        done: toBool(rawItem[itemDone] as String),
+        order: rawItem[itemOrder] as int,
+        id: id);
 
     return item;
   }
@@ -460,11 +480,8 @@ class NotesService {
     await _ensureDatabaseOpen();
     final database = getDatabase();
     final updateCount = await database.rawUpdate(
-        "UPDATE $itemsTable SET $itemText = ?, $itemDone = ? WHERE $itemId = ${item.id}",
-        [
-          item.text,
-          item.done,
-        ]);
+        "UPDATE $itemsTable SET $itemText = ?, $itemOrder = ?,$itemDone = ? WHERE $itemId = ${item.id}",
+        [item.text, item.done, item.order]);
     if (updateCount != 1) {
       throw CouldNotUpdateNoteException();
     }
@@ -482,5 +499,18 @@ class NotesService {
       throw CouldNotUpdateNoteException();
     }
     return await getListItem(id: id);
+  }
+
+  Future<void> changeNoteOrder({
+    required int index,
+    required int id,
+  }) async {
+    await _ensureDatabaseOpen();
+    final database = getDatabase();
+    final updateCount1 = await database
+        .rawUpdate("UPDATE $table SET $position = $index WHERE $noteId = $id");
+    if (updateCount1 != 1) {
+      throw CouldNotUpdateNoteException();
+    }
   }
 }

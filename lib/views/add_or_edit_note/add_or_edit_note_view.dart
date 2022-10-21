@@ -113,9 +113,10 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                   date: DateTime.now(),
                   rememberdate: rememberDate,
                   id: id,
-                  archived: false,
+                  archived: state.note!.archived,
                   listItems: itemList,
                   listName: listName,
+                  order: state.note!.order,
                 );
                 context.read<AddOrEditNoteBloc>().add(FinalEditEvent(note));
               }
@@ -162,7 +163,9 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                       id: id,
                       archived: false,
                       listItems: itemList,
-                      listName: _listNameController.text);
+                      listName: _listNameController.text,
+                      order: state.note!.order,
+                      );
                   context.read<AddOrEditNoteBloc>().add(EditNoteEvent(note));
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -247,7 +250,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                                       // pamietaj ze musisz dodawac itemy gdzie id == null i gdzie id != null updatowac i reszte wypierdolic
                                       itemList ??= [];
                                       setState(() {
-                                      itemList!.add(const DataBaseNoteListItem("",false,null));
+                                      itemList!.add(DataBaseNoteListItem(text: "",done: false, id: null,order: itemList!.length));
                                       });
                                     },
                                     child: const Text("Add new item")),
@@ -286,6 +289,30 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                       return Container();
                     },
                   ),
+                  // Builder(
+                  //   builder: (context) {
+                  //     List<Widget>? items;
+                  //     if (state is AddOrEditNoteStateValid &&
+                  //         itemList != null) {
+                  //       items = [];
+                  //       for (var i = 0; i < itemList!.length; i++) {
+                  //         items.add(AddOrEditNoteListItem(
+                  //             item: itemList![i],
+                  //             getItem: (DataBaseNoteListItem itemA) {
+                  //               itemList![i] = itemA; 
+                  //             },
+                  //             deleteItem: () {
+                  //               setState(() {
+                  //                 itemList!.removeAt(i);
+                  //               });
+                  //             }),);
+                  //       }
+                  //     }
+                  //     return Column(
+                  //       children: items ?? [],
+                  //     );
+                  //   },
+                  // ),
                   Builder(
                     builder: (context) {
                       List<Widget>? items;
@@ -308,6 +335,13 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                       return Column(
                         children: items ?? [],
                       );
+                      // return ReorderableListView(children: items ?? [], onReorder: (oldIndex, newIndex) {
+                      //   setState(() {
+                      //     var bufor = itemList![oldIndex];
+                      //     itemList![oldIndex] = itemList![newIndex];
+                      //     itemList![newIndex] = bufor;
+                      //   },);
+                      // },);
                     },
                   ),
                   Row(
