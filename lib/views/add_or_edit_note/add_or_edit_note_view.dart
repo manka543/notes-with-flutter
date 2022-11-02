@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/enums/note_list_order_items.dart';
@@ -63,11 +64,13 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
               id = state.note!.id;
               _titleController.text = state.note!.title;
               _textController.text = state.note!.text;
-              if ((state.note!.listName != null && state.note!.listName != '') ||
-                  (state.note!.listItems != null && state.note!.listItems != [])) {
+              if ((state.note!.listName != null &&
+                      state.note!.listName != '') ||
+                  (state.note!.listItems != null &&
+                      state.note!.listItems != [])) {
                 listSwitch = true;
                 _listNameController.text = state.note!.listName ?? "";
-              }else{
+              } else {
                 listSwitch = false;
               }
               if (state.note!.rememberdate != null) {
@@ -98,12 +101,12 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                 context.read<AddOrEditNoteBloc>().add(DeleteNoteEvent(id));
               } else {
                 String? listName;
-                if(_listNameController.text == ""){
+                if (_listNameController.text == "") {
                   listName = null;
                 } else {
                   listName = _listNameController.text;
                 }
-                if(itemList?.isEmpty ?? false){
+                if (itemList?.isEmpty ?? false) {
                   itemList = null;
                 }
                 final note = DataBaseNote(
@@ -113,9 +116,10 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                   date: DateTime.now(),
                   rememberdate: rememberDate,
                   id: id,
-                  archived: false,
+                  archived: state.note!.archived,
                   listItems: itemList,
                   listName: listName,
+                  order: state.note!.order,
                 );
                 context.read<AddOrEditNoteBloc>().add(FinalEditEvent(note));
               }
@@ -154,15 +158,17 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                     borderRadius: BorderRadius.all(Radius.circular(15))),
                 onPressed: () {
                   final note = DataBaseNote(
-                      text: _textController.text,
-                      title: _titleController.text,
-                      favourite: favourite,
-                      date: DateTime.now(),
-                      rememberdate: rememberDate,
-                      id: id,
-                      archived: false,
-                      listItems: itemList,
-                      listName: _listNameController.text);
+                    text: _textController.text,
+                    title: _titleController.text,
+                    favourite: favourite,
+                    date: DateTime.now(),
+                    rememberdate: rememberDate,
+                    id: id,
+                    archived: false,
+                    listItems: itemList,
+                    listName: _listNameController.text,
+                    order: state.note!.order,
+                  );
                   context.read<AddOrEditNoteBloc>().add(EditNoteEvent(note));
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -176,224 +182,280 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                 backgroundColor: Colors.yellow,
                 child: const Icon(Icons.save),
               ),
-              body: ListView(
-                padding: const EdgeInsets.all(15),
-                children: [
-                  const Text(
-                    "Title:",
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w300),
-                  ),
-                  TextField(
-                    controller: _titleController,
-                    maxLength: 60,
-                    decoration: const InputDecoration(hintText: "Title"),
-                  ),
-                  const Text(
-                    "Text:",
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w300),
-                  ),
-                  TextField(
-                    controller: _textController,
-                    maxLines: null,
-                    decoration: const InputDecoration(hintText: "Text of Note"),
-                  ),
-                  Row(
+              body: ReorderableListView.builder(
+                  header: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("Do you want to have list in your note"),
-                      Switch(
-                        activeColor: Colors.yellow,
-                        value: listSwitch,
-                        onChanged: (value) {
-                          setState(() {
-                            if (value == true) {
-                              _listNameController.text =
-                                  state.note!.listName ?? "";
-                              itemList = [];
-                            } else {
-                              _listNameController.text = "";
-                              itemList = null;
-                            }
-                            listSwitch = value;
-                          });
-                        },
+                      const Text(
+                        "Title:",
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.w300),
                       ),
-                    ],
-                  ),
-                  Builder(
-                    builder: (context) {
-                      if (listSwitch == true) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Title of list:",
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w300),
-                            ),
-                            TextField(
-                              controller: _listNameController,
-                              maxLength: 60,
-                              decoration: const InputDecoration(
-                                  hintText: "Name of your note's list"),
-                            ),
-                            Row(
-                              children: [
-                                TextButton(
-                                    onPressed: () {
-                                      // No więc generalnie problem jest taki ze pod tym guzikiem ciągnie potem notatke z databasa
-                                      // a moze tam byc jeszcze nie zupdatowana no i cofa progress więc musisz wypierdolic dodawanie 
-                                      // itemów blocem i dodawac je lokalnie w  tym screenie a na koniec podczas updatowania notatki
-                                      // to juz można miec wyjebane z tym co sie dzieje nie musi być jakoś super zoptymalizowane tylko
-                                      // pamietaj ze musisz dodawac itemy gdzie id == null i gdzie id != null updatowac i reszte wypierdolic
-                                      itemList ??= [];
-                                      setState(() {
-                                      itemList!.add(const DataBaseNoteListItem("",false,null));
-                                      });
-                                    },
-                                    child: const Text("Add new item")),
-                                PopupMenuButton(
-                                  itemBuilder: (context) {
-                                    return <PopupMenuEntry<NoteListOrderItems>>[
-                                      PopupMenuItem<NoteListOrderItems>(
-                                        value: NoteListOrderItems
-                                            .alphabeticallyDown,
-                                        child: Row(
-                                          children: const [
-                                            Text("Alphabetically"),
-                                            Icon(Icons.arrow_downward),
-                                          ],
-                                        ),
-                                      ),
-                                      PopupMenuItem<NoteListOrderItems>(
-                                        value:
-                                            NoteListOrderItems.alphabeticallyUp,
-                                        child: Row(
-                                          children: const [
-                                            Text("Alphabetically"),
-                                            Icon(Icons.arrow_upward),
-                                          ],
-                                        ),
-                                      ),
-                                    ];
-                                  },
-                                  child: const Icon(Icons.sort),
-                                ),
-                              ],
-                            ),
-                          ],
-                        );
-                      }
-                      return Container();
-                    },
-                  ),
-                  Builder(
-                    builder: (context) {
-                      List<Widget>? items;
-                      if (state is AddOrEditNoteStateValid &&
-                          itemList != null) {
-                        items = [];
-                        for (var i = 0; i < itemList!.length; i++) {
-                          items.add(AddOrEditNoteListItem(
-                              item: itemList![i],
-                              getItem: (DataBaseNoteListItem itemA) {
-                                itemList![i] = itemA; 
-                              },
-                              deleteItem: () {
-                                setState(() {
-                                  itemList!.removeAt(i);
-                                });
-                              }),);
-                        }
-                      }
-                      return Column(
-                        children: items ?? [],
-                      );
-                    },
-                  ),
-                  Row(
-                    children: [
-                      const Text("Do you want to be notify about this note?"),
-                      Switch(
-                        activeColor: Colors.yellow,
-                        value: rememberDateSwitch,
-                        onChanged: (value) {
-                          setState(
-                            () {
-                              if (value == true) {
-                                rememberDate =
-                                    DateTime.now().add(const Duration(days: 1));
-                                rememberDateSwitch = true;
-                              } else {
-                                rememberDate = null;
-                                rememberDateSwitch = false;
-                              }
-                            },
-                          );
-                        },
+                      TextField(
+                        controller: _titleController,
+                        maxLength: 60,
+                        decoration: const InputDecoration(hintText: "Title"),
                       ),
-                    ],
-                  ),
-                  Builder(
-                    builder: ((context) {
-                      if (!rememberDateSwitch) {
-                        return const Text("There won't be any notification");
-                      }
-                      return Column(
+                      const Text(
+                        "Text:",
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.w300),
+                      ),
+                      TextField(
+                        controller: _textController,
+                        maxLines: null,
+                        decoration:
+                            const InputDecoration(hintText: "Text of Note"),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                              "Notification will be on: ${dateTimeToString(rememberDate!)}"),
-                          const Divider(),
-                          const Text(
-                              "Click buttons below to pick prefered date and time"),
-                          TextButton(
-                            onPressed: () async {
-                              final date = await showDatePicker(
-                                context: context,
-                                initialDate: rememberDate!,
-                                firstDate: DateTime.now(),
-                                lastDate: DateTime.now()
-                                    .add(const Duration(days: 365)),
-                              );
-                              if (date != null) {
-                                setState(() {
-                                  rememberDate = DateTime(
-                                    date.year,
-                                    date.month,
-                                    date.day,
-                                    rememberDate!.hour,
-                                    rememberDate!.minute,
-                                  );
-                                });
-                              }
+                          const Text("Do you want to have list in your note"),
+                          Switch(
+                            activeColor: Colors.yellow,
+                            value: listSwitch,
+                            onChanged: (value) {
+                              setState(() {
+                                if (value == true) {
+                                  _listNameController.text =
+                                      state.note!.listName ?? "";
+                                  itemList = [];
+                                } else {
+                                  _listNameController.text = "";
+                                  itemList = null;
+                                }
+                                listSwitch = value;
+                              });
                             },
-                            child: const Text("Date Picker"),
-                          ),
-                          TextButton(
-                            onPressed: () async {
-                              final time = await showTimePicker(
-                                  context: context,
-                                  initialTime:
-                                      TimeOfDay.fromDateTime(rememberDate!));
-                              if (time != null) {
-                                setState(() {
-                                  rememberDate = rememberDate = DateTime(
-                                    rememberDate!.year,
-                                    rememberDate!.month,
-                                    rememberDate!.day,
-                                    time.hour,
-                                    time.minute,
-                                  );
-                                });
-                              }
-                            },
-                            child: const Text("Time Picker"),
                           ),
                         ],
-                      );
-                    }),
+                      ),
+                      Builder(
+                        builder: (context) {
+                          if (listSwitch == true) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "Title of list:",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w300),
+                                ),
+                                TextField(
+                                  controller: _listNameController,
+                                  maxLength: 60,
+                                  decoration: const InputDecoration(
+                                      hintText: "Name of your note's list"),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    TextButton(
+                                        onPressed: () {
+                                          // No więc generalnie problem jest taki ze pod tym guzikiem ciągnie potem notatke z databasa
+                                          // a moze tam byc jeszcze nie zupdatowana no i cofa progress więc musisz wypierdolic dodawanie
+                                          // itemów blocem i dodawac je lokalnie w  tym screenie a na koniec podczas updatowania notatki
+                                          // to juz można miec wyjebane z tym co sie dzieje nie musi być jakoś super zoptymalizowane tylko
+                                          // pamietaj ze musisz dodawac itemy gdzie id == null i gdzie id != null updatowac i reszte wypierdolic
+                                          itemList ??= [];
+                                          setState(() {
+                                            itemList!.add(DataBaseNoteListItem(
+                                                text: "",
+                                                done: false,
+                                                id: null,
+                                                order: itemList!.length));
+                                          });
+                                        },
+                                        child: const Text("Add new item")),
+                                    PopupMenuButton(
+                                      itemBuilder: (context) {
+                                        return <
+                                            PopupMenuEntry<NoteListOrderItems>>[
+                                          PopupMenuItem<NoteListOrderItems>(
+                                            value: NoteListOrderItems
+                                                .alphabeticallyDown,
+                                            child: Row(
+                                              children: const [
+                                                Text("Alphabetically"),
+                                                Icon(Icons.arrow_downward),
+                                              ],
+                                            ),
+                                          ),
+                                          PopupMenuItem<NoteListOrderItems>(
+                                            value: NoteListOrderItems
+                                                .alphabeticallyUp,
+                                            child: Row(
+                                              children: const [
+                                                Text("Alphabetically"),
+                                                Icon(Icons.arrow_upward),
+                                              ],
+                                            ),
+                                          ),
+                                        ];
+                                      },
+                                      child: const Icon(Icons.sort),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
+                          }
+                          return Container();
+                        },
+                      ),
+                      // Builder(
+                      //   builder: (context) {
+                      //     List<Widget>? items;
+                      //     if (state is AddOrEditNoteStateValid &&
+                      //         itemList != null) {
+                      //       items = [];
+                      //       for (var i = 0; i < itemList!.length; i++) {
+                      //         items.add(
+                      //           AddOrEditNoteListItem(
+                      //               key: UniqueKey(),
+                      //               item: itemList![i],
+                      //               getItem: (DataBaseNoteListItem itemA) {
+                      //                 itemList![i] = itemA;
+                      //               },
+                      //               deleteItem: () {
+                      //                 setState(() {
+                      //                   itemList!.removeAt(i);
+                      //                 });
+                      //               }),
+                      //         );
+                      //       }
+                      //     }
+                      //     return Column(
+                      //       children: items ?? [],
+                      //     );
+                      //     // return ReorderableListView(
+                      //     //   physics: const NeverScrollableScrollPhysics(),
+
+                      //     //   onReorder: (oldIndex, newIndex) {
+                      //     //     setState(
+                      //     //       () {
+                      //     //         var bufor = itemList![oldIndex];
+                      //     //         itemList![oldIndex] = itemList![newIndex];
+                      //     //         itemList![newIndex] = bufor;
+                      //     //       },
+                      //     //     );
+                      //     //   },
+                      //     //   children: items ?? [],
+                      //     // );
+                      //   },
+                      // ),
+                    ],
                   ),
-                ],
-              ),
+                  footer: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                              "Do you want to be notify about this note?"),
+                          Switch(
+                            activeColor: Colors.yellow,
+                            value: rememberDateSwitch,
+                            onChanged: (value) {
+                              setState(
+                                () {
+                                  if (value == true) {
+                                    rememberDate = DateTime.now()
+                                        .add(const Duration(days: 1));
+                                    rememberDateSwitch = true;
+                                  } else {
+                                    rememberDate = null;
+                                    rememberDateSwitch = false;
+                                  }
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      Builder(
+                        builder: ((context) {
+                          if (!rememberDateSwitch) {
+                            return const Text(
+                                "There won't be any notification");
+                          }
+                          return Column(
+                            children: [
+                              Text(
+                                  "Notification will be on: ${dateTimeToString(rememberDate!)}"),
+                              const Divider(),
+                              const Text(
+                                  "Click buttons below to pick prefered date and time"),
+                              TextButton(
+                                onPressed: () async {
+                                  final date = await showDatePicker(
+                                    context: context,
+                                    initialDate: rememberDate!,
+                                    firstDate: DateTime.now(),
+                                    lastDate: DateTime.now()
+                                        .add(const Duration(days: 365)),
+                                  );
+                                  if (date != null) {
+                                    setState(() {
+                                      rememberDate = DateTime(
+                                        date.year,
+                                        date.month,
+                                        date.day,
+                                        rememberDate!.hour,
+                                        rememberDate!.minute,
+                                      );
+                                    });
+                                  }
+                                },
+                                child: const Text("Date Picker"),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  final time = await showTimePicker(
+                                      context: context,
+                                      initialTime: TimeOfDay.fromDateTime(
+                                          rememberDate!));
+                                  if (time != null) {
+                                    setState(() {
+                                      rememberDate = rememberDate = DateTime(
+                                        rememberDate!.year,
+                                        rememberDate!.month,
+                                        rememberDate!.day,
+                                        time.hour,
+                                        time.minute,
+                                      );
+                                    });
+                                  }
+                                },
+                                child: const Text("Time Picker"),
+                              ),
+                            ],
+                          );
+                        }),
+                      ),
+                    ],
+                  ),
+                  onReorder: (oldIndex, newIndex) {},
+                  prototypeItem: AddOrEditNoteListItem(index: 0,item: const DataBaseNoteListItem(done: false, text: ""), getItem: (p0) => null, deleteItem: () => null,),
+                  buildDefaultDragHandles: false,
+                  padding: const EdgeInsets.all(15),
+                  itemCount: itemList?.length ?? 0,
+                  itemBuilder: (context, index) {
+                    return AddOrEditNoteListItem(
+                        index: index,
+                        key: UniqueKey(),
+                        item: itemList![index],
+                        getItem: (DataBaseNoteListItem itemA) {
+                          itemList![index] = itemA;
+                        },
+                        deleteItem: () {
+                          setState(() {
+                            itemList!.removeAt(index);
+                          });
+                        });
+                  }),
             ),
           );
         },

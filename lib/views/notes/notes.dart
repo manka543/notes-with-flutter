@@ -24,7 +24,7 @@ class _NotesState extends State<Notes> {
   bool updated = true;
 
   @override
-  void dispose(){
+  void dispose() {
     final notesService = NotesService();
     notesService.disposeStreams();
     super.dispose();
@@ -67,6 +67,7 @@ class _NotesState extends State<Notes> {
 
   @override
   Widget build(BuildContext context) {
+    List<DataBaseNote>? noteslist;
     return BlocProvider(
       create: (context) => NotesBloc(),
       child: Scaffold(
@@ -104,7 +105,10 @@ class _NotesState extends State<Notes> {
           ),
           body: BlocConsumer<NotesBloc, NotesState>(
             listener: (context, state) {
-              //do nothing
+              if(state is NotesStateValid){
+                noteslist = state.notes;
+                print(noteslist);
+              }
             },
             builder: (context, state) {
               if (updated == false) {
@@ -112,27 +116,40 @@ class _NotesState extends State<Notes> {
                 updated = true;
               }
               if (state is NotesStateValid) {
-                return DraggableScrollableSheet(
-                    initialChildSize: 1,
-                    minChildSize: 1,
-                    builder: (BuildContext context,
-                        ScrollController scrollController) {
-                      return ListView.builder(
-                          controller: scrollController,
-                          itemCount: state.notes?.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Note(
-                              note: DataBaseNote(
-                                  title: state.notes![index].title,
-                                  text: state.notes![index].text,
-                                  favourite: state.notes![index].favourite,
-                                  date: state.notes![index].date,
-                                  rememberdate:
-                                      state.notes?[index].rememberdate,
-                                  id: state.notes![index].id),
-                            );
-                          });
+                var widgets = <Widget>[];
+                for (var note in noteslist ?? state.notes!) {
+                  widgets.add(Note(
+                    note: note,
+                    key: UniqueKey(),
+                  ));
+                }
+                return ReorderableListView.builder(
+                  itemBuilder: (context, index) {
+                    return widgets[index];
+                  },
+                  itemCount: state.notes!.length,
+                  physics: const BouncingScrollPhysics(),
+                  onReorder: (oldIndex, newIndex) {
+                    print("i am reordering: $oldIndex, $newIndex");
+                    int? displacement;
+                    if(oldIndex > newIndex) {
+                    displacement = 1;
+                    } else {
+                      displacement = 0;
+                    }
+                    setState(() {
+                    noteslist ??= state.notes;
+                    noteslist!.insert(newIndex, state.notes![oldIndex]);
+                    noteslist!.removeAt(oldIndex + displacement!);
                     });
+
+                    // setState(() {
+                    // state.notes!.insert(newIndex, state.notes![oldIndex]);
+                    // state.notes!.remove(state.notes![oldIndex]);
+                    // });
+                    context.read<NotesBloc>().add(ChangeItemOrder(noteslist!));
+                  },
+                );
               } else if (state is NotesStateError) {
                 return const Text("An error occurred notes loading");
               } else if (state is NotesLoadingState) {

@@ -3,10 +3,11 @@ import 'package:notes/services/database_note.dart';
 
 class AddOrEditNoteListItem extends StatefulWidget {
   const AddOrEditNoteListItem(
-      {super.key, required this.item, required this.getItem, required this.deleteItem});
+      {super.key, required this.item, required this.getItem, required this.deleteItem, required this.index});
   final Function(DataBaseNoteListItem) getItem;
   final Function() deleteItem;
   final DataBaseNoteListItem item;
+  final int index;
   @override
   State<AddOrEditNoteListItem> createState() => _AddOrEditNoteListItemState();
 }
@@ -44,22 +45,14 @@ class _AddOrEditNoteListItemState extends State<AddOrEditNoteListItem> {
         ),
         child: Row(
           children: [
-            IconButton(
-                onPressed: () {
-                  setState(() {
-                    done = !done!;
-                  });
-                  widget.getItem(DataBaseNoteListItem(
-                      _controller.text, done!, widget.item.id));
-                },
-                icon: Icon(done! ? Icons.priority_high_outlined : Icons.done)),
+             ReorderableDragStartListener(index: widget.index,child: Icon(done! ? Icons.priority_high_outlined : Icons.done)),
             Expanded(
                 child: TextField(
               controller: _controller,
               decoration: const InputDecoration(hintText: "Text of item"),
               onChanged: (value) {
                 widget.getItem(DataBaseNoteListItem(
-                     value, done!, widget.item.id));
+                      text: _controller.text,done: done!,id: widget.item.id, order: widget.item.order));
               },
             )),
             IconButton(onPressed: () {

@@ -5,6 +5,7 @@ const text = "Text";
 const date = "Date";
 const rememberDate = "RememberDate";
 const favourite = "Favourite";
+const position = "position";
 const archived = "archived";
 const list = "list";
 const listTitle = "listTitle";
@@ -12,10 +13,12 @@ const itemsTable = "Items";
 const itemId = "ID";
 const itemText = "Text";
 const itemDone = "Done";
+const itemOrder = "Order";
 const itemNoteID = "NoteID";
 
 const createNotesTable = """CREATE TABLE IF NOT EXISTS "$table" (
 	"$noteId"	INTEGER NOT NULL UNIQUE,
+  "$position" INTEGER,
 	"$title"	TEXT,
 	"$text"	TEXT,
 	"$date"	TEXT,
@@ -31,6 +34,7 @@ const createListItemsTable = """CREATE TABLE IF NOT EXISTS "$itemsTable" (
 	"$itemId"	INTEGER NOT NULL UNIQUE,
 	"$itemText"	TEXT,
   "$itemDone" TEXT,
+  "$itemOrder" INTEGER,
   "$itemNoteID" INTEGER,
 	PRIMARY KEY("$itemId" AUTOINCREMENT)
 )""";
