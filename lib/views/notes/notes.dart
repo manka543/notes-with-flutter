@@ -7,7 +7,6 @@ import 'package:notes/services/notes_service.dart';
 import 'package:notes/views/notes/notes_bloc.dart';
 import 'package:notes/views/notes/notes_event.dart';
 import 'package:notes/widgets/note.dart';
-
 import 'notes_state.dart';
 
 class Notes extends StatefulWidget {

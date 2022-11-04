@@ -211,7 +211,9 @@ class NotesService {
       );
     }
     notes.sort(
-      (a, b) => a.order?.compareTo(b.order ?? b.id!) ?? a.id!.compareTo(b.order ?? b.id!),
+      (a, b) =>
+          a.order?.compareTo(b.order ?? b.id!) ??
+          a.id!.compareTo(b.order ?? b.id!),
     );
     return notes;
   }
@@ -254,7 +256,6 @@ class NotesService {
         text: rawItem[itemText] as String,
         done: toBool(rawItem[itemDone] as String),
         id: rawItem[itemId] as int,
-        order: rawItem[itemOrder] as int,
       ));
     }
     return items;
@@ -302,30 +303,38 @@ class NotesService {
         }
       }
     } else {
-      note.listItems?.forEach((element) async {
+      List<int> oldItemsIds = [];
+      if(oldNote.listItems?.isNotEmpty ?? false){
+      oldNote.listItems!.forEach((element) => oldItemsIds.add(element.id!),);
+      }
+      print(note.listItems);
+      for(var element in note.listItems!) {
         if (element.id == null) {
+          print("i am creating list item: $element");
           createListItem(item: element, noteID: note.id!);
         } else {
-          if (oldNote.listItems?.contains(element) ?? false == false) {
-            final itemUpdateCount = await database.rawUpdate(
-              "UPDATE $itemsTable SET $itemDone = ?, $itemText = ?, $itemOrder WHERE $itemId = ${element.id}",
-              [
-                element.done,
-                element.text,
-                element.order,
-              ],
-            );
-            if (itemUpdateCount != 1) {
-              throw CouldNotUpdateNoteException();
-            }
+          print("i am updating list item: $element");
+
+          final itemUpdateCount = await database.rawUpdate(
+            "UPDATE $itemsTable SET $itemDone = ?, $itemText = ? WHERE $itemId = ${element.id}",
+            [
+              element.done.toString(),
+              element.text,
+            ],
+          );
+          if (itemUpdateCount != 1) {
+            throw CouldNotUpdateNoteException();
           }
-          oldNote.listItems
-              ?.removeWhere((oldElement) => oldElement.id == element.id);
+          
+          print("1" + oldItemsIds.remove(element.id).toString()) ;
+          print("here ${oldItemsIds}");
         }
-      });
-      oldNote.listItems?.forEach((element1) async {
+      };
+      print(oldItemsIds);
+      oldItemsIds.forEach((element1) async {
+        print("i am deleting list item: $element1");
         if (await database.rawDelete(
-                "DELETE FROM $itemsTable WHERE $itemId = ${element1.id}") !=
+                "DELETE FROM $itemsTable WHERE $itemId = ${element1}") !=
             1) {
           throw CouldNotUpdateNoteException();
         }
@@ -383,11 +392,10 @@ class NotesService {
     if (note.listItems?.isNotEmpty ?? false) {
       for (var listItem in note.listItems!) {
         final insertItemId = await database.rawInsert(
-            "INSERT INTO $itemsTable($itemText,$itemDone,$itemOrder,$itemNoteID) VALUES(?,?,?,?)",
+            "INSERT INTO $itemsTable($itemText,$itemDone,$itemNoteID) VALUES(?,?,?)",
             [
               listItem.text,
               listItem.done,
-              listItem.order,
               insertId,
             ]);
         if (insertItemId == 0) {
@@ -446,11 +454,10 @@ class NotesService {
     await _ensureDatabaseOpen();
     final database = getDatabase();
     final newItemId = await database.rawInsert(
-      "INSERT INTO $itemsTable($itemText, $itemDone, $itemOrder, $itemNoteID) VALUES(?,?,?,?)",
+      "INSERT INTO $itemsTable($itemText, $itemDone, $itemNoteID) VALUES(?,?,?)",
       [
         item.text,
         item.done.toString(),
-        item.order,
         noteID,
       ],
     );
@@ -469,7 +476,6 @@ class NotesService {
     final item = DataBaseNoteListItem(
         text: rawItem[itemText] as String,
         done: toBool(rawItem[itemDone] as String),
-        order: rawItem[itemOrder] as int,
         id: id);
 
     return item;
@@ -480,8 +486,8 @@ class NotesService {
     await _ensureDatabaseOpen();
     final database = getDatabase();
     final updateCount = await database.rawUpdate(
-        "UPDATE $itemsTable SET $itemText = ?, $itemOrder = ?,$itemDone = ? WHERE $itemId = ${item.id}",
-        [item.text, item.done, item.order]);
+        "UPDATE $itemsTable SET $itemText = ?, $itemDone = ? WHERE $itemId = ${item.id}",
+        [item.text, item.done]);
     if (updateCount != 1) {
       throw CouldNotUpdateNoteException();
     }

@@ -30,9 +30,8 @@ class DataBaseNote {
 }
 
 class DataBaseNoteListItem {
-  const DataBaseNoteListItem({this.text, required this.done, this.order,this.id});
+  const DataBaseNoteListItem({this.text, required this.done, this.id});
   final String? text;
-  final int? order;
   final bool done;
   final int? id;
 
