@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/enums/note_list_order_items.dart';
@@ -46,7 +45,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
 
   @override
   Widget build(BuildContext context) {
-    id = ModalRoute.of(context)!.settings.arguments as int? ?? id;
+    id = id ?? ModalRoute.of(context)!.settings.arguments as int?;
     return BlocProvider(
       create: (context) => AddOrEditNoteBloc(),
       child: BlocConsumer<AddOrEditNoteBloc, AddOrEditNoteState>(

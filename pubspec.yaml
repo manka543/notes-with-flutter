@@ -42,6 +42,7 @@ dependencies:
   flutter_local_notifications: ^9.9.0
   timezone: ^0.8.0
   awesome_notifications: ^0.6.21
+  flutter_native_splash: ^2.2.14
 
 dev_dependencies:
   flutter_test:
@@ -108,3 +109,8 @@ icons_launcher:
       adaptive_round_image: 'assets/ic_notes.png'
     ios:
       enable: true
+flutter_native_splash:
+  color: "#ffeb3a"
+  color_dark: "#ffeb3a"
+  image: "assets/ic_launcher.png"
+  
