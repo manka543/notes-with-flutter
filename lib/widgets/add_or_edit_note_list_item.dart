@@ -3,7 +3,10 @@ import 'package:notes/services/database_note.dart';
 
 class AddOrEditNoteListItem extends StatefulWidget {
   const AddOrEditNoteListItem(
-      {super.key, required this.item, required this.getItem, required this.deleteItem});
+      {super.key,
+      required this.item,
+      required this.getItem,
+      required this.deleteItem});
   final Function(DataBaseNoteListItem) getItem;
   final Function() deleteItem;
   final DataBaseNoteListItem item;
@@ -38,25 +41,41 @@ class _AddOrEditNoteListItemState extends State<AddOrEditNoteListItem> {
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: widget.item.done
-              ? Theme.of(context).focusColor
-              : Theme.of(context).disabledColor,
+              ? Theme.of(context).disabledColor
+              : Theme.of(context).focusColor,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
           children: [
-            Icon(done! ? Icons.priority_high_outlined : Icons.done),
+            IconButton(
+                onPressed: () {
+                  setState(() {
+                    done = !done!;
+                  });
+                  widget.getItem(DataBaseNoteListItem(
+                    text: _controller.text,
+                    done: done!,
+                    id: widget.item.id,
+                  ));
+                },
+                icon: Icon(done! ? Icons.done : Icons.priority_high_outlined)),
             Expanded(
                 child: TextField(
               controller: _controller,
               decoration: const InputDecoration(hintText: "Text of item"),
               onChanged: (value) {
                 widget.getItem(DataBaseNoteListItem(
-                      text: _controller.text,done: done!,id: widget.item.id,));
+                  text: _controller.text,
+                  done: done!,
+                  id: widget.item.id,
+                ));
               },
             )),
-            IconButton(onPressed: () {
-              widget.deleteItem();
-            }, icon: const Icon(Icons.delete))
+            IconButton(
+                onPressed: () {
+                  widget.deleteItem();
+                },
+                icon: const Icon(Icons.delete))
           ],
         ),
       ),
