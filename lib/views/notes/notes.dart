@@ -101,10 +101,28 @@ class _NotesState extends State<Notes> {
                 }
               },
             ),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    showAboutDialog(
+                      context: context,
+                      applicationIcon: Container(
+                          padding: EdgeInsets.all(7),
+                          decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Icon(Icons.note, color: Colors.yellow)),
+                      applicationName: "Notes",
+                      applicationVersion: "v6",
+                      applicationLegalese: "Done by manka543",
+                    );
+                  },
+                  icon: const Icon(Icons.info_outline))
+            ],
           ),
           body: BlocConsumer<NotesBloc, NotesState>(
             listener: (context, state) {
-              if(state is NotesStateValid){
+              if (state is NotesStateValid) {
                 noteslist = state.notes;
                 print(noteslist);
               }
@@ -131,15 +149,15 @@ class _NotesState extends State<Notes> {
                   onReorder: (oldIndex, newIndex) {
                     print("i am reordering: $oldIndex, $newIndex");
                     int? displacement;
-                    if(oldIndex > newIndex) {
-                    displacement = 1;
+                    if (oldIndex > newIndex) {
+                      displacement = 1;
                     } else {
                       displacement = 0;
                     }
                     setState(() {
-                    noteslist ??= state.notes;
-                    noteslist!.insert(newIndex, state.notes![oldIndex]);
-                    noteslist!.removeAt(oldIndex + displacement!);
+                      noteslist ??= state.notes;
+                      noteslist!.insert(newIndex, state.notes![oldIndex]);
+                      noteslist!.removeAt(oldIndex + displacement!);
                     });
 
                     // setState(() {

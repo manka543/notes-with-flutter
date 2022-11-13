@@ -8,9 +8,6 @@ Flutter project of app which is created to keeping user's notes and sending loca
 
 ## ToDo
 
-. about informations with AboutDialog widget
-. sort note list items by done parameter
-. set name in open aps menu view on android
 . create archived notes view
 . create warnings before delete notes and in more other places
 . create comments
