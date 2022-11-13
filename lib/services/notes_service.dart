@@ -420,9 +420,8 @@ class NotesService {
     final database = getDatabase();
     final deletedNote = await getNote(id: id);
     if (deletedNote.listItems?.isNotEmpty ?? false) {
-      final deletedItemCount = database.rawDelete(
+      final deletedItemCount = await database.rawDelete(
           "DELETE FROM $itemsTable WHERE $itemNoteID = ${deletedNote.id}");
-      // ignore: unrelated_type_equality_checks
       if (deletedItemCount != deletedNote.listItems?.length) {
         throw CouldNotDeleteException();
       }

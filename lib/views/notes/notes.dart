@@ -119,7 +119,7 @@ class _NotesState extends State<Notes> {
                 for (var note in noteslist ?? state.notes!) {
                   widgets.add(Note(
                     note: note,
-                    key: UniqueKey(),
+                    key: Key(note.id!.toString()),
                   ));
                 }
                 return ReorderableListView.builder(

@@ -4,7 +4,7 @@ Flutter project of app which is created to keeping user's notes and sending loca
 
 ## Known bugs
 
-1. If you have opened note in notes view and delete note which is min 2 places above this note will be collapsed and note below will be open
+ App is perfect
 
 ## ToDo
 
@@ -15,5 +15,4 @@ Flutter project of app which is created to keeping user's notes and sending loca
 . create warnings before delete notes and in more other places
 . create comments
 . delete unused methods in notes service
-. repair color animations in notes view
 . publish app on google store
