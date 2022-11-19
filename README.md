@@ -7,9 +7,8 @@ Flutter project of app which is created to keeping user's notes and sending loca
  App is perfect
 
 ## ToDo
-
+. create advice to set app auto start to true 
 . create archived notes view
-. create warnings before delete notes and in more other places
 . create comments
 . delete unused methods in notes service
 . publish app on google store

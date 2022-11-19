@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/const/routes.dart';
-import 'package:notes/fuctions/date_time_to_string.dart';
+import 'package:notes/dialogs/delete_note_alert_dialog.dart';
+import 'package:notes/functions/date_time_to_string.dart';
 import 'package:notes/services/to_icon.dart';
 import 'package:notes/views/note_view/bloc/note_view_bloc.dart';
 import 'package:notes/widgets/note_list_item.dart';
@@ -15,6 +16,7 @@ class NoteView extends StatefulWidget {
 class _NoteViewState extends State<NoteView> {
   int? id;
   bool updated = true;
+  bool noteScreenUpdated = true;
   @override
   Widget build(BuildContext context) {
     id = ModalRoute.of(context)!.settings.arguments as int;
@@ -30,6 +32,7 @@ class _NoteViewState extends State<NoteView> {
           if (updated == false) {
             context.read<NoteViewBloc>().add(GetNoteEvent(id!));
             updated = true;
+            noteScreenUpdated = false;
           }
           if (state is NoteViewInitial) {
             context.read<NoteViewBloc>().add(GetNoteEvent(id!));
@@ -60,7 +63,11 @@ class _NoteViewState extends State<NoteView> {
                     icon: Icon(toIcon(state.note.favourite)),
                   ),
                   IconButton(
-                      onPressed: () {
+                      onPressed: () async {
+                        if (await deleteNoteAlertDialog(context: context) !=
+                            true) {
+                          return;
+                        }
                         context.read<NoteViewBloc>().add(DeleteNoteEvent(id!));
                       },
                       icon: const Icon(Icons.delete)),
@@ -110,7 +117,13 @@ class _NoteViewState extends State<NoteView> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Divider(),
-                            Text(state.note.listName!, style: const TextStyle(fontSize: 24, color: Colors.white54, fontWeight: FontWeight.w300),)
+                            Text(
+                              state.note.listName!,
+                              style: const TextStyle(
+                                  fontSize: 24,
+                                  color: Colors.white54,
+                                  fontWeight: FontWeight.w300),
+                            )
                           ],
                         );
                       }
@@ -123,11 +136,21 @@ class _NoteViewState extends State<NoteView> {
                         var widgets = <Widget>[];
                         widgets.add(const Divider());
                         for (var noteItem in state.note.listItems!) {
-                          widgets.add(NoteListItem(item: noteItem, changeItemProgress: (done, id) {
-                            context.read<NoteViewBloc>().add(ChangeItemProgres(progress: done, id: id, note: state.note));
-                          }, deleteItem: (id) {
-                            context.read<NoteViewBloc>().add(DeleteItem(id: id, note: state.note));
-                          },));
+                          widgets.add(NoteListItem(
+                            item: noteItem,
+                            changeItemProgress: (done, id) {
+                              context.read<NoteViewBloc>().add(
+                                  ChangeItemProgres(
+                                      progress: done,
+                                      id: id,
+                                      note: state.note));
+                            },
+                            deleteItem: (id) {
+                              context
+                                  .read<NoteViewBloc>()
+                                  .add(DeleteItem(id: id, note: state.note));
+                            },
+                          ));
                         }
                         return Column(
                           children: widgets,

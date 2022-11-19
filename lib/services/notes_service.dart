@@ -1,5 +1,5 @@
 import 'package:notes/const/routes.dart';
-import 'package:notes/fuctions/to_bool.dart';
+import 'package:notes/functions/to_bool.dart';
 import 'package:notes/services/database_note.dart';
 import 'package:notes/services/databasequeries.dart';
 import 'package:notes/services/notes_service_exeptions.dart';

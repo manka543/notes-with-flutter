@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:notes/dialogs/delete_note_alert_dialog.dart';
+import 'package:notes/dialogs/exit_alert_dialog.dart';
 import 'package:notes/enums/note_list_order_items.dart';
-import 'package:notes/fuctions/date_time_to_string.dart';
+import 'package:notes/functions/date_time_to_string.dart';
 import 'package:notes/services/database_note.dart';
 import 'package:notes/services/to_icon.dart';
 import 'package:notes/views/add_or_edit_note/add_or_edit_note_bloc.dart';
@@ -95,9 +97,12 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
             }
           }
           return WillPopScope(
-            onWillPop: (() {
+            onWillPop: (() async {
               if (_titleController.text == "" && _textController.text == "") {
-                context.read<AddOrEditNoteBloc>().add(DeleteNoteEvent(id));
+                if(await showExitAlertDialog(context: context) == true){
+                  context.read<AddOrEditNoteBloc>().add(DeleteNoteEvent(id));
+                  return false;
+                }
               } else {
                 String? listName;
                 if (_listNameController.text == "") {
@@ -122,7 +127,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                 );
                 context.read<AddOrEditNoteBloc>().add(FinalEditEvent(note));
               }
-              return Future.value(false);
+              return false;
             }),
             child: Scaffold(
               appBar: AppBar(
@@ -143,7 +148,8 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                     icon: Icon(toIcon(favourite)),
                   ),
                   IconButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      if(await deleteNoteAlertDialog(context: context) == false)return;
                       context
                           .read<AddOrEditNoteBloc>()
                           .add(DeleteNoteEvent(id));

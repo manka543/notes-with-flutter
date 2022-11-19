@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/const/routes.dart';
+import 'package:notes/dialogs/delete_note_alert_dialog.dart';
 import 'package:notes/services/database_note.dart';
 import 'package:notes/services/to_icon.dart';
 import 'package:notes/views/notes/notes_bloc.dart';
@@ -21,6 +22,8 @@ class _NoteState extends State<Note> {
   Widget build(BuildContext context) {
     if (toUpdate == true) {
       context.read<NotesBloc>().add(const GetAllNotes());
+      setState(() => toUpdate = false
+      );    
     }
     return Padding(
       padding: const EdgeInsets.all(15),
@@ -139,7 +142,10 @@ class _NoteState extends State<Note> {
                         children: [
                           Expanded(
                             child: IconButton(
-                                onPressed: () {
+                                onPressed: () async {
+                                  if(await deleteNoteAlertDialog(context: context) != true){
+                                    return;
+                                  }
                                   selected = false;
                                   context
                                       .read<NotesBloc>()
@@ -156,14 +162,13 @@ class _NoteState extends State<Note> {
                           Expanded(
                             child: IconButton(
                                 onPressed: () async {
-                                  final updated = await Navigator.pushNamed(
+                                  await Navigator.pushNamed(
                                       context, noteViewRoute,
-                                      arguments: widget.note.id) as bool?;
-                                  if (updated != null) {
+                                      arguments: widget.note.id);
                                     setState(() {
-                                      toUpdate = updated;
+                                      toUpdate = true;
                                     });
-                                  }
+                                  
                                 },
                                 icon: const Icon(Icons.zoom_in)),
                           ),
