@@ -45,6 +45,10 @@ class _NoteViewState extends State<NoteView> {
               appBar: AppBar(
                 title: const Text("Note Details"),
                 actions: [
+                  IconButton(onPressed: () {
+                    context.read<NoteViewBloc>().add(ChangeArchivedStatus(!state.note.archived, state.note.id!));
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(!state.note.archived ? "Note moved to archive" : "Note moved out of archive", style: const TextStyle(color: Colors.white),)));
+                  }, icon: Icon(state.note.archived ? Icons.archive : Icons.archive_outlined)),
                   IconButton(
                     onPressed: (() {
                       if (state.note.favourite == true) {

@@ -11,6 +11,10 @@ class NotesStateValid extends NotesState {
   const NotesStateValid(super.notes);
 }
 
+class ArchivedNotesStateValid extends NotesState {
+  const ArchivedNotesStateValid(super.notes);
+}
+
 class NotesStateError extends NotesState {
   const NotesStateError(super.notes, this.exception, this.message);
   final Exception? exception;

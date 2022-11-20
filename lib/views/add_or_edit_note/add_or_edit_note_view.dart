@@ -24,10 +24,26 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
   late final TextEditingController _listNameController;
   List<DataBaseNoteListItem>? itemList = [];
   DateTime? rememberDate;
+  DateTime? date;
   bool rememberDateSwitch = false;
+  int? noteOrder;
   int? id;
+  bool archived = false;
   bool favourite = false;
   bool listSwitch = false;
+
+  DataBaseNote get actualNote => DataBaseNote(
+        id: id,
+        title: _titleController.text,
+        text: _textController.text,
+        listName: _listNameController.text != "" ? _listNameController.text : null,
+        listItems: itemList != null && itemList!.isEmpty ? null : itemList,
+        rememberdate: rememberDate,
+        archived: archived,
+        favourite: favourite,
+        date: date ?? DateTime.now(),
+        order: noteOrder,
+      );
 
   @override
   void initState() {
@@ -65,6 +81,9 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
               id = state.note!.id;
               _titleController.text = state.note!.title;
               _textController.text = state.note!.text;
+              archived = state.note!.archived;
+              noteOrder = state.note!.order;
+              date = state.note!.date;
               if ((state.note!.listName != null &&
                       state.note!.listName != '') ||
                   (state.note!.listItems != null &&
@@ -99,32 +118,12 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
           return WillPopScope(
             onWillPop: (() async {
               if (_titleController.text == "" && _textController.text == "") {
-                if(await showExitAlertDialog(context: context) == true){
+                if (await showExitAlertDialog(context: context) == true) {
                   context.read<AddOrEditNoteBloc>().add(DeleteNoteEvent(id));
                   return false;
                 }
               } else {
-                String? listName;
-                if (_listNameController.text == "") {
-                  listName = null;
-                } else {
-                  listName = _listNameController.text;
-                }
-                if (itemList?.isEmpty ?? false) {
-                  itemList = null;
-                }
-                final note = DataBaseNote(
-                  text: _textController.text,
-                  title: _titleController.text,
-                  favourite: favourite,
-                  date: DateTime.now(),
-                  rememberdate: rememberDate,
-                  id: id,
-                  archived: state.note!.archived,
-                  listItems: itemList,
-                  listName: listName,
-                  order: state.note!.order,
-                );
+                final note = actualNote;
                 context.read<AddOrEditNoteBloc>().add(FinalEditEvent(note));
               }
               return false;
@@ -133,6 +132,21 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
               appBar: AppBar(
                 title: const Text("Editing note"),
                 actions: <Widget>[
+                  IconButton(
+                      onPressed: () {
+                        setState(() {
+                          archived = !archived;
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                          archived
+                              ? "Note moved to archive"
+                              : "Note moved out of archive",
+                          style: const TextStyle(color: Colors.white),
+                        )));
+                      },
+                      icon: Icon(
+                          archived ? Icons.archive : Icons.archive_outlined)),
                   IconButton(
                     onPressed: (() {
                       if (favourite) {
@@ -149,7 +163,13 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                   ),
                   IconButton(
                     onPressed: () async {
-                      if(await deleteNoteAlertDialog(context: context) == false)return;
+                      final option = deleteNoteAlertDialog(context: context);
+                      if (await option == DeleteOptions.cancel) return;
+                      if (await option == DeleteOptions.archive) {
+                        archived = true;
+                        context.read<AddOrEditNoteBloc>().add(FinalEditEvent(actualNote));
+                        return;
+                      }
                       context
                           .read<AddOrEditNoteBloc>()
                           .add(DeleteNoteEvent(id));
@@ -162,18 +182,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                 shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15))),
                 onPressed: () {
-                  final note = DataBaseNote(
-                    text: _textController.text,
-                    title: _titleController.text,
-                    favourite: favourite,
-                    date: DateTime.now(),
-                    rememberdate: rememberDate,
-                    id: id,
-                    archived: false,
-                    listItems: itemList,
-                    listName: _listNameController.text,
-                    order: state.note!.order,
-                  );
+                  final note = actualNote;
                   context.read<AddOrEditNoteBloc>().add(EditNoteEvent(note));
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -251,11 +260,6 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                             children: [
                               TextButton(
                                   onPressed: () {
-                                    // No więc generalnie problem jest taki ze pod tym guzikiem ciągnie potem notatke z databasa
-                                    // a moze tam byc jeszcze nie zupdatowana no i cofa progress więc musisz wypierdolic dodawanie
-                                    // itemów blocem i dodawac je lokalnie w  tym screenie a na koniec podczas updatowania notatki
-                                    // to juz można miec wyjebane z tym co sie dzieje nie musi być jakoś super zoptymalizowane tylko
-                                    // pamietaj ze musisz dodawac itemy gdzie id == null i gdzie id != null updatowac i reszte wypierdolic
                                     itemList ??= [];
                                     setState(() {
                                       itemList!.add(const DataBaseNoteListItem(
@@ -301,47 +305,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                     return Container();
                   },
                 ),
-                // Builder(
-                //   builder: (context) {
-                //     List<Widget>? items;
-                //     if (state is AddOrEditNoteStateValid &&
-                //         itemList != null) {
-                //       items = [];
-                //       for (var i = 0; i < itemList!.length; i++) {
-                //         items.add(
-                //           AddOrEditNoteListItem(
-                //               key: UniqueKey(),
-                //               item: itemList![i],
-                //               getItem: (DataBaseNoteListItem itemA) {
-                //                 itemList![i] = itemA;
-                //               },
-                //               deleteItem: () {
-                //                 setState(() {
-                //                   itemList!.removeAt(i);
-                //                 });
-                //               }),
-                //         );
-                //       }
-                //     }
-                //     return Column(
-                //       children: items ?? [],
-                //     );
-                //     // return ReorderableListView(
-                //     //   physics: const NeverScrollableScrollPhysics(),
 
-                //     //   onReorder: (oldIndex, newIndex) {
-                //     //     setState(
-                //     //       () {
-                //     //         var bufor = itemList![oldIndex];
-                //     //         itemList![oldIndex] = itemList![newIndex];
-                //     //         itemList![newIndex] = bufor;
-                //     //       },
-                //     //     );
-                //     //   },
-                //     //   children: items ?? [],
-                //     // );
-                //   },
-                // ),
                 Builder(
                   builder: (context) {
                     var widgets = <Widget>[const Divider()];

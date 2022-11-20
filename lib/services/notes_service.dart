@@ -194,7 +194,34 @@ class NotesService {
   Future<List<DataBaseNote>> getallNotes() async {
     await _ensureDatabaseOpen();
     final database = getDatabase();
-    final rawNotes = await database.rawQuery("SELECT * FROM $table");
+    final rawNotes = await database.rawQuery("""SELECT * FROM $table WHERE $archived = "false" """);
+    List<DataBaseNote> notes = [];
+    for (var rawNote in rawNotes) {
+      notes.add(
+        DataBaseNote(
+          title: rawNote[title].toString(),
+          text: rawNote[text].toString(),
+          favourite: toBool(rawNote[favourite] as String),
+          date: DateTime.parse(rawNote[date].toString()),
+          rememberdate: DateTime.tryParse(rawNote[rememberDate].toString()),
+          id: int.parse(rawNote[noteId].toString()),
+          archived: toBool(rawNote[archived] as String),
+          order: rawNote[position] as int?,
+        ),
+      );
+    }
+    notes.sort(
+      (a, b) =>
+          a.order?.compareTo(b.order ?? b.id!) ??
+          a.id!.compareTo(b.order ?? b.id!),
+    );
+    return notes;
+  }
+  
+  Future<List<DataBaseNote>> getArchivedNotes() async {
+    await _ensureDatabaseOpen();
+    final database = getDatabase();
+    final rawNotes = await database.rawQuery("""SELECT * FROM $table WHERE $archived = "true" """);
     List<DataBaseNote> notes = [];
     for (var rawNote in rawNotes) {
       notes.add(
@@ -305,7 +332,9 @@ class NotesService {
     } else {
       List<int> oldItemsIds = [];
       if(oldNote.listItems?.isNotEmpty ?? false){
-      oldNote.listItems!.forEach((element) => oldItemsIds.add(element.id!),);
+      for (var element in oldNote.listItems!) {
+        oldItemsIds.add(element.id!);
+      }
       }
       print(note.listItems);
       for(var element in note.listItems!) {
@@ -326,19 +355,17 @@ class NotesService {
             throw CouldNotUpdateNoteException();
           }
           
-          print("1" + oldItemsIds.remove(element.id).toString()) ;
-          print("here ${oldItemsIds}");
+          print("1${oldItemsIds.remove(element.id)}") ;
+          print("here $oldItemsIds");
         }
-      };
-      print(oldItemsIds);
-      oldItemsIds.forEach((element1) async {
-        print("i am deleting list item: $element1");
-        if (await database.rawDelete(
-                "DELETE FROM $itemsTable WHERE $itemId = ${element1}") !=
-            1) {
+      }
+      for (var element1 in oldItemsIds) {
+        final deleted = await database.rawDelete(
+                "DELETE FROM $itemsTable WHERE $itemId = $element1");
+        if ( deleted != 1) {
           throw CouldNotUpdateNoteException();
         }
-      });
+      }
     }
     if (oldNote.rememberdate != null &&
         oldNote.rememberdate!.isAfter(DateTime.now())) {
@@ -364,6 +391,20 @@ class NotesService {
     final dataBase = getDatabase();
     final updateCount = await dataBase.rawUpdate(
         "UPDATE $table SET $favourite = ? WHERE $noteId = ?", [favourity, id]);
+    if (updateCount != 1) {
+      throw CouldNotUpdateNoteException();
+    }
+    return await getNote(id: id);
+  }
+  
+  Future<DataBaseNote> changeArchive({
+    required int id,
+    required bool archiveStatus,
+  }) async {
+    await _ensureDatabaseOpen();
+    final dataBase = getDatabase();
+    final updateCount = await dataBase.rawUpdate(
+        "UPDATE $table SET $archived = ? WHERE $noteId = ?", [archiveStatus.toString(), id]);
     if (updateCount != 1) {
       throw CouldNotUpdateNoteException();
     }

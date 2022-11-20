@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:notes/dialogs/generic_dialog.dart';
 
-Future<bool?> deleteNoteAlertDialog({
+enum DeleteOptions {archive , delete, cancel}
+
+Future<DeleteOptions> deleteNoteAlertDialog({
   required BuildContext context,
 }) {
-  return showGenericDialog<bool>(
+  return showGenericDialog<DeleteOptions>(
       context: context,
       title: "Are you sure you want to delete this note?",
-      actions: {"OK": true, "Cancel": false}).then(
+      content: "You can also move this note to archive by pressing button below",
+      actions: {"Move to archive": DeleteOptions.archive,"Delete": DeleteOptions.delete, "Cancel": DeleteOptions.cancel}).then(
     (value) {
-      return value ?? false;
+      return value ?? DeleteOptions.cancel;
     },
   );
 }

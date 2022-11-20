@@ -3,35 +3,26 @@ import 'package:notes/services/database_note.dart';
 
 @immutable
 abstract class NotesEvent {
-  const NotesEvent();
+  final bool archiveView;
+  const NotesEvent(this.archiveView);
 }
 
 class GetAllNotes extends NotesEvent {
-  const GetAllNotes();
+  const GetAllNotes(super.archiveView);
 }
 
 class DeleteNote extends NotesEvent {
   final int id;
-  const DeleteNote(this.id);
-}
-
-class AddNote extends NotesEvent {
-  final DataBaseNote note;
-  const AddNote(this.note);
-}
-
-class UpdateNote extends NotesEvent {
-  final DataBaseNote note;
-  const UpdateNote(this.note);
+  const DeleteNote(this.id, super.archiveView);
 }
 
 class ChangeFavourity extends NotesEvent {
   final String favourity;
   final int noteId;
-  const ChangeFavourity(this.favourity, this.noteId);
+  const ChangeFavourity(this.favourity, this.noteId, super.archiveView);
 }
 
-class ChangeItemOrder extends NotesEvent {
+class ChangeNotesOrder extends NotesEvent {
   final List<DataBaseNote> notes;
-  const ChangeItemOrder(this.notes);
+  const ChangeNotesOrder(this.notes, super.archiveView);
 }

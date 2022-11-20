@@ -22,6 +22,13 @@ class ChangeFavourity extends NoteViewEvent {
   ChangeFavourity(this.favourity, this.id);
 }
 
+class ChangeArchivedStatus extends NoteViewEvent {
+  final bool archive;
+  final int id;
+
+  ChangeArchivedStatus(this.archive, this.id);
+}
+
 class ChangeItemProgres extends NoteViewEvent {
   final bool progress;
   final int id;

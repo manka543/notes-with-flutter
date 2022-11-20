@@ -21,7 +21,7 @@ class _NoteState extends State<Note> {
   @override
   Widget build(BuildContext context) {
     if (toUpdate == true) {
-      context.read<NotesBloc>().add(const GetAllNotes());
+      context.read<NotesBloc>().add(GetAllNotes(widget.note.archived));
       setState(() => toUpdate = false
       );    
     }
@@ -52,10 +52,10 @@ class _NoteState extends State<Note> {
                           onPressed: () {
                             if (widget.note.favourite) {
                               context.read<NotesBloc>().add(
-                                  ChangeFavourity("false", widget.note.id!));
+                                  ChangeFavourity("false", widget.note.id!, widget.note.archived));
                             } else {
                               context.read<NotesBloc>().add(
-                                  ChangeFavourity("true", widget.note.id!));
+                                  ChangeFavourity("true", widget.note.id!, widget.note.archived));
                             }
                           },
                           icon: Icon(
@@ -86,10 +86,10 @@ class _NoteState extends State<Note> {
                           onPressed: () {
                             if (widget.note.favourite) {
                               context.read<NotesBloc>().add(
-                                  ChangeFavourity("false", widget.note.id!));
+                                  ChangeFavourity("false", widget.note.id!, widget.note.archived));
                             } else {
                               context.read<NotesBloc>().add(
-                                  ChangeFavourity("true", widget.note.id!));
+                                  ChangeFavourity("true", widget.note.id!, widget.note.archived));
                             }
                           },
                           icon: Icon(toIcon(widget.note.favourite)),
@@ -149,7 +149,7 @@ class _NoteState extends State<Note> {
                                   selected = false;
                                   context
                                       .read<NotesBloc>()
-                                      .add(DeleteNote(widget.note.id!));
+                                      .add(DeleteNote(widget.note.id!, widget.note.archived));
                                   ScaffoldMessenger.of(context)
                                       .showSnackBar(const SnackBar(
                                           content: Text(

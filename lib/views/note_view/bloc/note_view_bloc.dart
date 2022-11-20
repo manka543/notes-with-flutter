@@ -43,11 +43,28 @@ class NoteViewBloc extends Bloc<NoteViewEvent, NoteViewState> {
         }
       },
     );
+    on<ChangeArchivedStatus>(
+      (event, emit) async {
+        final NotesService notesService = NotesService();
+        try {
+          await notesService.changeArchive(
+            archiveStatus: event.archive,
+            id: event.id,
+          );
+          emit(NoteViewValid(await notesService.getNote(id: event.id)));
+        } on CouldNotUpdateNoteException {
+          emit(NoteViewError());
+        }
+      },
+    );
     on<ChangeItemProgres>((event, emit) async {
       final NotesService notesService = NotesService();
       try {
-        final updatedItem = await notesService.changeItemProgress(id: event.id, progress: event.progress);
-        final index = event.note.listItems!.indexWhere((element) => element.id == event.id,);
+        final updatedItem = await notesService.changeItemProgress(
+            id: event.id, progress: event.progress);
+        final index = event.note.listItems!.indexWhere(
+          (element) => element.id == event.id,
+        );
         event.note.listItems![index] = updatedItem;
       } on CouldNotUpdateNoteException {
         emit(NoteViewError());

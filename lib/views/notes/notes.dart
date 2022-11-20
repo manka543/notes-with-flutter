@@ -69,116 +69,144 @@ class _NotesState extends State<Notes> {
     List<DataBaseNote>? noteslist;
     return BlocProvider(
       create: (context) => NotesBloc(),
-      child: Scaffold(
-          floatingActionButton: FloatingActionButton(
-            shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(15))),
-            backgroundColor: Colors.yellow,
-            child: const Icon(Icons.add),
-            onPressed: () async {
-              final toUpdate = await Navigator.of(context).pushNamed(
-                addOrEditNoteViewRoute,
-              ) as bool?;
-              if (toUpdate == true) {
-                setState(() {
-                  updated = false;
-                });
-              }
-            },
-          ),
-          appBar: AppBar(
-            title: const Text("Notes"),
-            leading: IconButton(
-              icon: const Icon(Icons.note_add),
-              onPressed: () async {
-                final toUpdate = await Navigator.of(context).pushNamed(
-                  addOrEditNoteViewRoute,
-                ) as bool?;
-                if (toUpdate == true) {
-                  setState(() {
-                    updated = false;
-                  });
-                }
-              },
-            ),
-            actions: [
-              IconButton(
-                  onPressed: () {
-                    showAboutDialog(
-                      context: context,
-                      applicationIcon: Container(
-                          padding: EdgeInsets.all(7),
-                          decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Icon(Icons.note, color: Colors.yellow)),
-                      applicationName: "Notes",
-                      applicationVersion: "v6",
-                      applicationLegalese: "Done by manka543",
-                    );
-                  },
-                  icon: const Icon(Icons.info_outline))
-            ],
-          ),
-          body: BlocConsumer<NotesBloc, NotesState>(
-            listener: (context, state) {
-              if (state is NotesStateValid) {
-                noteslist = state.notes;
-                print(noteslist);
-              }
-            },
-            builder: (context, state) {
-              if (updated == false) {
-                context.read<NotesBloc>().add(const GetAllNotes());
-                updated = true;
-              }
-              if (state is NotesStateValid) {
-                var widgets = <Widget>[];
-                for (var note in noteslist ?? state.notes!) {
-                  widgets.add(Note(
-                    note: note,
-                    key: Key(note.id!.toString()),
-                  ));
-                }
-                return ReorderableListView.builder(
-                  itemBuilder: (context, index) {
-                    return widgets[index];
-                  },
-                  itemCount: state.notes!.length,
-                  physics: const BouncingScrollPhysics(),
-                  onReorder: (oldIndex, newIndex) {
-                    print("i am reordering: $oldIndex, $newIndex");
-                    int? displacement;
-                    if (oldIndex > newIndex) {
-                      displacement = 1;
-                    } else {
-                      displacement = 0;
-                    }
+      child: BlocConsumer<NotesBloc, NotesState>(
+        listener: (context, state) {
+          print(state);
+          if (state is NotesStateValid || state is ArchivedNotesStateValid) {
+            noteslist = state.notes;
+            print(noteslist);
+          }
+        },
+        builder: (context, state) {
+          if (updated == false) {
+            context.read<NotesBloc>().add(GetAllNotes(state is NotesStateValid ? false : true));
+            updated = true;
+          }
+          return Scaffold(
+              floatingActionButton: FloatingActionButton(
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(15))),
+                backgroundColor: state is ArchivedNotesStateValid ? Colors.yellow.shade300 : Colors.yellow,
+                child: const Icon(Icons.add),
+                onPressed: () async {
+                  final toUpdate = await Navigator.of(context).pushNamed(
+                    addOrEditNoteViewRoute,
+                  ) as bool?;
+                  if (toUpdate == true) {
                     setState(() {
-                      noteslist ??= state.notes;
-                      noteslist!.insert(newIndex, state.notes![oldIndex]);
-                      noteslist!.removeAt(oldIndex + displacement!);
+                      updated = false;
                     });
+                  }
+                },
+              ),
+              appBar: AppBar(
+                backgroundColor: state is ArchivedNotesStateValid ? Colors.yellow.shade300 : Colors.yellow,
+                title: Text(
+                    state is ArchivedNotesStateValid ? "Archived notes" : "Notes"),
+                leading: state is ArchivedNotesStateValid
+                    ? IconButton(
+                        onPressed: () {
+                          context.read<NotesBloc>().add(const GetAllNotes(false));
+                        },
+                        icon: const Icon(Icons.no_backpack),
+                      )
+                    : IconButton(
+                        icon: const Icon(Icons.note_add),
+                        onPressed: () async {
+                          final toUpdate =
+                              await Navigator.of(context).pushNamed(
+                            addOrEditNoteViewRoute,
+                          ) as bool?;
+                          if (toUpdate == true) {
+                            setState(() {
+                              updated = false;
+                            });
+                          }
+                        },
+                      ),
+                actions: [
+                  IconButton(
+                      tooltip: "Archive",
+                      onPressed: () {
+                        if(state is NotesStateValid){
+                          context.read<NotesBloc>().add(const GetAllNotes(true));
+                        } else {
+                          context.read<NotesBloc>().add(const GetAllNotes(false));
+                        }
+                      },
+                      icon: Icon(state is ArchivedNotesStateValid ? Icons.archive : Icons.archive_outlined)),
+                  IconButton(
+                      onPressed: () {
+                        showAboutDialog(
+                          context: context,
+                          applicationIcon: Container(
+                              padding: const EdgeInsets.all(7),
+                              decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child:
+                                  const Icon(Icons.note, color: Colors.yellow)),
+                          applicationName: "Notes",
+                          applicationVersion: "v6",
+                          applicationLegalese: "Done by manka543",
+                        );
+                      },
+                      icon: const Icon(Icons.info_outline))
+                ],
+              ),
+              body: Builder(
+                builder: (context) {
+                  if (state is NotesStateValid || state is ArchivedNotesStateValid) {
+                    var widgets = <Widget>[];
+                    for (var note in noteslist ?? state.notes!) {
+                      widgets.add(Note(
+                        note: note,
+                        key: Key(note.id!.toString()),
+                      ));
+                    }
+                    return ReorderableListView.builder(
+                      itemBuilder: (context, index) {
+                        return widgets[index];
+                      },
+                      itemCount: state.notes!.length,
+                      physics: const BouncingScrollPhysics(),
+                      onReorder: (oldIndex, newIndex) {
+                        print("i am reordering: $oldIndex, ");
+                        int? displacement;
+                        if (oldIndex > newIndex) {
+                          displacement = 1;
+                        } else {
+                          displacement = 0;
+                        }
+                        setState(() {
+                          noteslist ??= state.notes;
+                          noteslist!.insert(newIndex, state.notes![oldIndex]);
+                          noteslist!.removeAt(oldIndex + displacement!);
+                        });
 
-                    // setState(() {
-                    // state.notes!.insert(newIndex, state.notes![oldIndex]);
-                    // state.notes!.remove(state.notes![oldIndex]);
-                    // });
-                    context.read<NotesBloc>().add(ChangeItemOrder(noteslist!));
-                  },
-                );
-              } else if (state is NotesStateError) {
-                return const Text("An error occurred notes loading");
-              } else if (state is NotesLoadingState) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (state is NotesInitState) {
-                context.read<NotesBloc>().add(const GetAllNotes());
-                return const Center(child: CircularProgressIndicator());
-              } else {
-                return const Text("An error occurrednotes state loading");
-              }
-            },
-          )),
+                        // setState(() {
+                        // state.notes!.insert(newIndex, state.notes![oldIndex]);
+                        // state.notes!.remove(state.notes![oldIndex]);
+                        // });
+                        context
+                            .read<NotesBloc>()
+                            .add(ChangeNotesOrder(noteslist!, state is ArchivedNotesStateValid));
+                      },
+                    );
+                  } else if (state is NotesStateError) {
+                    return const Text("An error occurred notes loading");
+                  } else if (state is NotesLoadingState) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is NotesInitState) {
+                    context.read<NotesBloc>().add(const GetAllNotes(false));
+                    return const Center(child: CircularProgressIndicator());
+                  } else {
+                    return const Text("An error occurrednotes state loading");
+                  }
+                },
+              ));
+        },
+      ),
     );
   }
 }
