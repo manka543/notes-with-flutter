@@ -22,8 +22,7 @@ class _NoteState extends State<Note> {
   Widget build(BuildContext context) {
     if (toUpdate == true) {
       context.read<NotesBloc>().add(GetAllNotes(widget.note.archived));
-      setState(() => toUpdate = false
-      );    
+      setState(() => toUpdate = false);
     }
     return Padding(
       padding: const EdgeInsets.all(15),
@@ -51,11 +50,15 @@ class _NoteState extends State<Note> {
                         child: IconButton(
                           onPressed: () {
                             if (widget.note.favourite) {
-                              context.read<NotesBloc>().add(
-                                  ChangeFavourity("false", widget.note.id!, widget.note.archived));
+                              context.read<NotesBloc>().add(ChangeFavourity(
+                                  "false",
+                                  widget.note.id!,
+                                  widget.note.archived));
                             } else {
-                              context.read<NotesBloc>().add(
-                                  ChangeFavourity("true", widget.note.id!, widget.note.archived));
+                              context.read<NotesBloc>().add(ChangeFavourity(
+                                  "true",
+                                  widget.note.id!,
+                                  widget.note.archived));
                             }
                           },
                           icon: Icon(
@@ -85,11 +88,15 @@ class _NoteState extends State<Note> {
                         child: IconButton(
                           onPressed: () {
                             if (widget.note.favourite) {
-                              context.read<NotesBloc>().add(
-                                  ChangeFavourity("false", widget.note.id!, widget.note.archived));
+                              context.read<NotesBloc>().add(ChangeFavourity(
+                                  "false",
+                                  widget.note.id!,
+                                  widget.note.archived));
                             } else {
-                              context.read<NotesBloc>().add(
-                                  ChangeFavourity("true", widget.note.id!, widget.note.archived));
+                              context.read<NotesBloc>().add(ChangeFavourity(
+                                  "true",
+                                  widget.note.id!,
+                                  widget.note.archived));
                             }
                           },
                           icon: Icon(toIcon(widget.note.favourite)),
@@ -143,13 +150,28 @@ class _NoteState extends State<Note> {
                           Expanded(
                             child: IconButton(
                                 onPressed: () async {
-                                  if(await deleteNoteAlertDialog(context: context) != true){
+                                  final option = widget.note.archived == false
+                                      ? deleteNoteAlertDialog(context: context)
+                                      : deleteArchivedNoteAlertDialog(
+                                          context: context);
+                                  if (await option == DeleteOptions.cancel) {
+                                    return;
+                                  }
+                                  if (await option == DeleteOptions.archive) {
+                                    context.read<NotesBloc>().add(
+                                        ChangeArchived(
+                                            true, widget.note.id!, false));
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                            content: Text(
+                                      "Note ",
+                                      style: TextStyle(color: Colors.white),
+                                    )));
                                     return;
                                   }
                                   selected = false;
-                                  context
-                                      .read<NotesBloc>()
-                                      .add(DeleteNote(widget.note.id!, widget.note.archived));
+                                  context.read<NotesBloc>().add(DeleteNote(
+                                      widget.note.id!, widget.note.archived));
                                   ScaffoldMessenger.of(context)
                                       .showSnackBar(const SnackBar(
                                           content: Text(
@@ -165,10 +187,9 @@ class _NoteState extends State<Note> {
                                   await Navigator.pushNamed(
                                       context, noteViewRoute,
                                       arguments: widget.note.id);
-                                    setState(() {
-                                      toUpdate = true;
-                                    });
-                                  
+                                  setState(() {
+                                    toUpdate = true;
+                                  });
                                 },
                                 icon: const Icon(Icons.zoom_in)),
                           ),

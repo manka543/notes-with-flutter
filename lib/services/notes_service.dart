@@ -194,7 +194,8 @@ class NotesService {
   Future<List<DataBaseNote>> getallNotes() async {
     await _ensureDatabaseOpen();
     final database = getDatabase();
-    final rawNotes = await database.rawQuery("""SELECT * FROM $table WHERE $archived = "false" """);
+    final rawNotes = await database
+        .rawQuery("""SELECT * FROM $table WHERE $archived = "false" """);
     List<DataBaseNote> notes = [];
     for (var rawNote in rawNotes) {
       notes.add(
@@ -217,11 +218,12 @@ class NotesService {
     );
     return notes;
   }
-  
+
   Future<List<DataBaseNote>> getArchivedNotes() async {
     await _ensureDatabaseOpen();
     final database = getDatabase();
-    final rawNotes = await database.rawQuery("""SELECT * FROM $table WHERE $archived = "true" """);
+    final rawNotes = await database
+        .rawQuery("""SELECT * FROM $table WHERE $archived = "true" """);
     List<DataBaseNote> notes = [];
     for (var rawNote in rawNotes) {
       notes.add(
@@ -331,13 +333,13 @@ class NotesService {
       }
     } else {
       List<int> oldItemsIds = [];
-      if(oldNote.listItems?.isNotEmpty ?? false){
-      for (var element in oldNote.listItems!) {
-        oldItemsIds.add(element.id!);
-      }
+      if (oldNote.listItems?.isNotEmpty ?? false) {
+        for (var element in oldNote.listItems!) {
+          oldItemsIds.add(element.id!);
+        }
       }
       print(note.listItems);
-      for(var element in note.listItems!) {
+      for (var element in note.listItems!) {
         if (element.id == null) {
           print("i am creating list item: $element");
           createListItem(item: element, noteID: note.id!);
@@ -354,15 +356,15 @@ class NotesService {
           if (itemUpdateCount != 1) {
             throw CouldNotUpdateNoteException();
           }
-          
-          print("1${oldItemsIds.remove(element.id)}") ;
+
+          print("1${oldItemsIds.remove(element.id)}");
           print("here $oldItemsIds");
         }
       }
       for (var element1 in oldItemsIds) {
-        final deleted = await database.rawDelete(
-                "DELETE FROM $itemsTable WHERE $itemId = $element1");
-        if ( deleted != 1) {
+        final deleted = await database
+            .rawDelete("DELETE FROM $itemsTable WHERE $itemId = $element1");
+        if (deleted != 1) {
           throw CouldNotUpdateNoteException();
         }
       }
@@ -396,7 +398,7 @@ class NotesService {
     }
     return await getNote(id: id);
   }
-  
+
   Future<DataBaseNote> changeArchive({
     required int id,
     required bool archiveStatus,
@@ -404,7 +406,8 @@ class NotesService {
     await _ensureDatabaseOpen();
     final dataBase = getDatabase();
     final updateCount = await dataBase.rawUpdate(
-        "UPDATE $table SET $archived = ? WHERE $noteId = ?", [archiveStatus.toString(), id]);
+        "UPDATE $table SET $archived = ? WHERE $noteId = ?",
+        [archiveStatus.toString(), id]);
     if (updateCount != 1) {
       throw CouldNotUpdateNoteException();
     }

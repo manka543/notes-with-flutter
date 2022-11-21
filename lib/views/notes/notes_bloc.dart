@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:notes/services/database_note.dart';
 import 'package:notes/services/notes_service.dart';
 import 'package:notes/services/notes_service_exeptions.dart';
 import 'package:notes/views/notes/notes_event.dart';
@@ -58,6 +57,25 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
               CouldNotUpdateNoteException(),
               "Could not change favourity of your note"));
           return;
+        }
+      },
+    );
+    on<ChangeArchived>(
+      (event, emit) async {
+        final NotesService notesService = NotesService();
+        try {
+          await notesService.changeArchive(
+            archiveStatus: event.archived,
+            id: event.id,
+          );
+          emit(event.archiveView
+              ? ArchivedNotesStateValid(await notesService.getArchivedNotes())
+              : NotesStateValid(await notesService.getallNotes()));
+        } on CouldNotUpdateNoteException {
+          emit(NotesStateError(
+              await notesService.getallNotes(),
+              CouldNotUpdateNoteException(),
+              "Could not move your note to archive"));
         }
       },
     );

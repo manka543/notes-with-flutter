@@ -36,7 +36,7 @@ class DataBaseNoteListItem {
   final int? id;
 
   @override
-  String toString(){
+  String toString() {
     return "Instance of DataBaseNoteListItem; ID: $id, DONE: $done, NAME: $text";
   }
 }

@@ -11,13 +11,15 @@ Future<T?> showGenericDialog<T>({
       builder: ((context) {
         List<Widget> widgets = [];
         for (var action in actions.keys) {
-          widgets.add(TextButton(onPressed: () {
-            Navigator.of(context).pop(actions[action]);
-          }, child: Text(action)));
+          widgets.add(TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(actions[action]);
+              },
+              child: Text(action)));
         }
         return AlertDialog(
-          title: Text(title),
-          content: content != null ? Text(content) : null,
-          actions: widgets);
+            title: Text(title),
+            content: content != null ? Text(content) : null,
+            actions: widgets);
       }));
 }

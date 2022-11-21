@@ -34,12 +34,13 @@ class ChangeItemProgres extends NoteViewEvent {
   final int id;
   final DataBaseNote note;
 
-  ChangeItemProgres({required this.progress, required this.id, required this.note});
+  ChangeItemProgres(
+      {required this.progress, required this.id, required this.note});
 }
 
 class DeleteItem extends NoteViewEvent {
   final int id;
   final DataBaseNote note;
 
-  DeleteItem({required this.id,required this.note});
+  DeleteItem({required this.id, required this.note});
 }

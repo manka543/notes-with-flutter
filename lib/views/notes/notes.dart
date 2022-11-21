@@ -79,14 +79,18 @@ class _NotesState extends State<Notes> {
         },
         builder: (context, state) {
           if (updated == false) {
-            context.read<NotesBloc>().add(GetAllNotes(state is NotesStateValid ? false : true));
+            context
+                .read<NotesBloc>()
+                .add(GetAllNotes(state is NotesStateValid ? false : true));
             updated = true;
           }
           return Scaffold(
               floatingActionButton: FloatingActionButton(
                 shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15))),
-                backgroundColor: state is ArchivedNotesStateValid ? Colors.yellow.shade300 : Colors.yellow,
+                backgroundColor: state is ArchivedNotesStateValid
+                    ? Colors.brown.shade700
+                    : Colors.yellow,
                 child: const Icon(Icons.add),
                 onPressed: () async {
                   final toUpdate = await Navigator.of(context).pushNamed(
@@ -100,13 +104,18 @@ class _NotesState extends State<Notes> {
                 },
               ),
               appBar: AppBar(
-                backgroundColor: state is ArchivedNotesStateValid ? Colors.yellow.shade300 : Colors.yellow,
-                title: Text(
-                    state is ArchivedNotesStateValid ? "Archived notes" : "Notes"),
+                backgroundColor: state is ArchivedNotesStateValid
+                    ? Colors.brown.shade700
+                    : Colors.yellow,
+                title: Text(state is ArchivedNotesStateValid
+                    ? "Archived notes"
+                    : "Notes"),
                 leading: state is ArchivedNotesStateValid
                     ? IconButton(
                         onPressed: () {
-                          context.read<NotesBloc>().add(const GetAllNotes(false));
+                          context
+                              .read<NotesBloc>()
+                              .add(const GetAllNotes(false));
                         },
                         icon: const Icon(Icons.no_backpack),
                       )
@@ -128,13 +137,19 @@ class _NotesState extends State<Notes> {
                   IconButton(
                       tooltip: "Archive",
                       onPressed: () {
-                        if(state is NotesStateValid){
-                          context.read<NotesBloc>().add(const GetAllNotes(true));
+                        if (state is NotesStateValid) {
+                          context
+                              .read<NotesBloc>()
+                              .add(const GetAllNotes(true));
                         } else {
-                          context.read<NotesBloc>().add(const GetAllNotes(false));
+                          context
+                              .read<NotesBloc>()
+                              .add(const GetAllNotes(false));
                         }
                       },
-                      icon: Icon(state is ArchivedNotesStateValid ? Icons.archive : Icons.archive_outlined)),
+                      icon: Icon(state is ArchivedNotesStateValid
+                          ? Icons.archive
+                          : Icons.archive_outlined)),
                   IconButton(
                       onPressed: () {
                         showAboutDialog(
@@ -156,7 +171,8 @@ class _NotesState extends State<Notes> {
               ),
               body: Builder(
                 builder: (context) {
-                  if (state is NotesStateValid || state is ArchivedNotesStateValid) {
+                  if (state is NotesStateValid ||
+                      state is ArchivedNotesStateValid) {
                     var widgets = <Widget>[];
                     for (var note in noteslist ?? state.notes!) {
                       widgets.add(Note(
@@ -188,9 +204,8 @@ class _NotesState extends State<Notes> {
                         // state.notes!.insert(newIndex, state.notes![oldIndex]);
                         // state.notes!.remove(state.notes![oldIndex]);
                         // });
-                        context
-                            .read<NotesBloc>()
-                            .add(ChangeNotesOrder(noteslist!, state is ArchivedNotesStateValid));
+                        context.read<NotesBloc>().add(ChangeNotesOrder(
+                            noteslist!, state is ArchivedNotesStateValid));
                       },
                     );
                   } else if (state is NotesStateError) {

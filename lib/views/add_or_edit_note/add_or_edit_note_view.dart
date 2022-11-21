@@ -28,7 +28,7 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
   bool rememberDateSwitch = false;
   int? noteOrder;
   int? id;
-  bool archived = false;
+  bool archived = true;
   bool favourite = false;
   bool listSwitch = false;
 
@@ -36,7 +36,8 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
         id: id,
         title: _titleController.text,
         text: _textController.text,
-        listName: _listNameController.text != "" ? _listNameController.text : null,
+        listName:
+            _listNameController.text != "" ? _listNameController.text : null,
         listItems: itemList != null && itemList!.isEmpty ? null : itemList,
         rememberdate: rememberDate,
         archived: archived,
@@ -131,6 +132,8 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
             child: Scaffold(
               appBar: AppBar(
                 title: const Text("Editing note"),
+                backgroundColor:
+                    archived ? Colors.brown.shade700 : Colors.yellow,
                 actions: <Widget>[
                   IconButton(
                       onPressed: () {
@@ -167,7 +170,9 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                       if (await option == DeleteOptions.cancel) return;
                       if (await option == DeleteOptions.archive) {
                         archived = true;
-                        context.read<AddOrEditNoteBloc>().add(FinalEditEvent(actualNote));
+                        context
+                            .read<AddOrEditNoteBloc>()
+                            .add(FinalEditEvent(actualNote));
                         return;
                       }
                       context
@@ -178,24 +183,30 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                   ),
                 ],
               ),
-              floatingActionButton: FloatingActionButton(
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(15))),
-                onPressed: () {
-                  final note = actualNote;
-                  context.read<AddOrEditNoteBloc>().add(EditNoteEvent(note));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        "Note has been saved",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  );
-                },
-                backgroundColor: Colors.yellow,
-                child: const Icon(Icons.save),
-              ),
+              floatingActionButton: state is AddOrEditNoteStateValid
+                  ? FloatingActionButton(
+                      shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(15))),
+                      onPressed: () {
+                        final note = actualNote;
+                        context
+                            .read<AddOrEditNoteBloc>()
+                            .add(EditNoteEvent(note));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "Note has been saved",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        );
+                      },
+                      backgroundColor: state.note!.archived
+                          ? Colors.brown.shade700
+                          : Colors.yellow,
+                      child: const Icon(Icons.save),
+                    )
+                  : Container(),
               body: ListView(padding: const EdgeInsets.all(15), children: [
                 const Text(
                   "Title:",
@@ -305,7 +316,6 @@ class _AddOrEditNoteViewState extends State<AddOrEditNoteView> {
                     return Container();
                   },
                 ),
-
                 Builder(
                   builder: (context) {
                     var widgets = <Widget>[const Divider()];

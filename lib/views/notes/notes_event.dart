@@ -22,6 +22,13 @@ class ChangeFavourity extends NotesEvent {
   const ChangeFavourity(this.favourity, this.noteId, super.archiveView);
 }
 
+class ChangeArchived extends NotesEvent {
+  final bool archived;
+  final int id;
+
+  const ChangeArchived(this.archived, this.id, super.archiveView);
+}
+
 class ChangeNotesOrder extends NotesEvent {
   final List<DataBaseNote> notes;
   const ChangeNotesOrder(this.notes, super.archiveView);

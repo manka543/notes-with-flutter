@@ -44,11 +44,24 @@ class _NoteViewState extends State<NoteView> {
             return Scaffold(
               appBar: AppBar(
                 title: const Text("Note Details"),
+                backgroundColor:
+                    state.note.archived ? Colors.brown.shade700 : Colors.yellow,
                 actions: [
-                  IconButton(onPressed: () {
-                    context.read<NoteViewBloc>().add(ChangeArchivedStatus(!state.note.archived, state.note.id!));
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(!state.note.archived ? "Note moved to archive" : "Note moved out of archive", style: const TextStyle(color: Colors.white),)));
-                  }, icon: Icon(state.note.archived ? Icons.archive : Icons.archive_outlined)),
+                  IconButton(
+                      onPressed: () {
+                        context.read<NoteViewBloc>().add(ChangeArchivedStatus(
+                            !state.note.archived, state.note.id!));
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                          !state.note.archived
+                              ? "Note moved to archive"
+                              : "Note moved out of archive",
+                          style: const TextStyle(color: Colors.white),
+                        )));
+                      },
+                      icon: Icon(state.note.archived
+                          ? Icons.archive
+                          : Icons.archive_outlined)),
                   IconButton(
                     onPressed: (() {
                       if (state.note.favourite == true) {
@@ -68,8 +81,16 @@ class _NoteViewState extends State<NoteView> {
                   ),
                   IconButton(
                       onPressed: () async {
-                        if (await deleteNoteAlertDialog(context: context) !=
-                            true) {
+                        final option = state.note.archived
+                            ? deleteArchivedNoteAlertDialog(context: context)
+                            : deleteNoteAlertDialog(context: context);
+                        if (await option == DeleteOptions.cancel) {
+                          return;
+                        }
+                        if (await option == DeleteOptions.archive) {
+                          context
+                              .read<NoteViewBloc>()
+                              .add(ChangeArchivedStatus(true, state.note.id!));
                           return;
                         }
                         context.read<NoteViewBloc>().add(DeleteNoteEvent(id!));
@@ -91,7 +112,8 @@ class _NoteViewState extends State<NoteView> {
                     });
                   }
                 },
-                backgroundColor: Colors.yellow,
+                backgroundColor:
+                    state.note.archived ? Colors.brown.shade700 : Colors.yellow,
                 shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15))),
                 child: const Icon(Icons.edit),

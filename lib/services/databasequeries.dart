@@ -36,6 +36,3 @@ const createListItemsTable = """CREATE TABLE IF NOT EXISTS "$itemsTable" (
   "$itemNoteID" INTEGER,
 	PRIMARY KEY("$itemId" AUTOINCREMENT)
 )""";
-
-
-

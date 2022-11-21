@@ -30,15 +30,18 @@ class AddOrEditNoteBloc extends Bloc<AddOrEditNoteEvent, AddOrEditNoteState> {
         }
       },
     );
-    on<EditNoteListItem>((event, emit) async {
-      final notesService = NotesService();
+    on<EditNoteListItem>(
+      (event, emit) async {
+        final notesService = NotesService();
         try {
           await notesService.updateListItem(item: event.item);
-          emit(AddOrEditNoteStateValid(await notesService.getNote(id: event.noteId)));
+          emit(AddOrEditNoteStateValid(
+              await notesService.getNote(id: event.noteId)));
         } on CouldNotUpdateNoteException {
           emit(const AddOrEditNoteStateError(null));
         }
-    },);
+      },
+    );
     on<DeleteNoteEvent>(
       (event, emit) async {
         if (event.id == null) {
@@ -54,15 +57,18 @@ class AddOrEditNoteBloc extends Bloc<AddOrEditNoteEvent, AddOrEditNoteState> {
         }
       },
     );
-    on<DeleteNoteListItem>((event, emit) async {
-      final notesService = NotesService();
+    on<DeleteNoteListItem>(
+      (event, emit) async {
+        final notesService = NotesService();
         try {
           await notesService.deleteListItem(id: event.id);
-          emit(AddOrEditNoteStateValid(await notesService.getNote(id: event.noteId)));
+          emit(AddOrEditNoteStateValid(
+              await notesService.getNote(id: event.noteId)));
         } on CouldNotUpdateNoteException {
           emit(const AddOrEditNoteStateError(null));
         }
-    },);
+      },
+    );
     on<CreateEmptyNoteEvent>((event, emit) async {
       final notesService = NotesService();
       try {
@@ -78,15 +84,19 @@ class AddOrEditNoteBloc extends Bloc<AddOrEditNoteEvent, AddOrEditNoteState> {
         emit(const AddOrEditNoteStateError(null));
       }
     });
-    on<CreateNoteListItem>((event, emit) async {
-      final notesService = NotesService();
+    on<CreateNoteListItem>(
+      (event, emit) async {
+        final notesService = NotesService();
         try {
-          await notesService.createListItem(item: event.item, noteID: event.noteId);
-          emit(AddOrEditNoteStateValid(await notesService.getNote(id: event.noteId)));
+          await notesService.createListItem(
+              item: event.item, noteID: event.noteId);
+          emit(AddOrEditNoteStateValid(
+              await notesService.getNote(id: event.noteId)));
         } on CouldNotUpdateNoteException {
           emit(const AddOrEditNoteStateError(null));
         }
-    },);
+      },
+    );
     on<GetNoteEvent>(
       (event, emit) async {
         try {
