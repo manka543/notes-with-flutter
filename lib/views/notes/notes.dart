@@ -71,10 +71,8 @@ class _NotesState extends State<Notes> {
       create: (context) => NotesBloc(),
       child: BlocConsumer<NotesBloc, NotesState>(
         listener: (context, state) {
-          print(state);
           if (state is NotesStateValid || state is ArchivedNotesStateValid) {
             noteslist = state.notes;
-            print(noteslist);
           }
         },
         builder: (context, state) {
@@ -162,7 +160,7 @@ class _NotesState extends State<Notes> {
                               child:
                                   const Icon(Icons.note, color: Colors.yellow)),
                           applicationName: "Notes",
-                          applicationVersion: "v6",
+                          applicationVersion: "v1.0",
                           applicationLegalese: "Done by manka543",
                         );
                       },
@@ -187,7 +185,6 @@ class _NotesState extends State<Notes> {
                       itemCount: state.notes!.length,
                       physics: const BouncingScrollPhysics(),
                       onReorder: (oldIndex, newIndex) {
-                        print("i am reordering: $oldIndex, ");
                         int? displacement;
                         if (oldIndex > newIndex) {
                           displacement = 1;

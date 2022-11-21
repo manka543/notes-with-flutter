@@ -338,14 +338,10 @@ class NotesService {
           oldItemsIds.add(element.id!);
         }
       }
-      print(note.listItems);
       for (var element in note.listItems!) {
         if (element.id == null) {
-          print("i am creating list item: $element");
           createListItem(item: element, noteID: note.id!);
         } else {
-          print("i am updating list item: $element");
-
           final itemUpdateCount = await database.rawUpdate(
             "UPDATE $itemsTable SET $itemDone = ?, $itemText = ? WHERE $itemId = ${element.id}",
             [
@@ -356,9 +352,6 @@ class NotesService {
           if (itemUpdateCount != 1) {
             throw CouldNotUpdateNoteException();
           }
-
-          print("1${oldItemsIds.remove(element.id)}");
-          print("here $oldItemsIds");
         }
       }
       for (var element1 in oldItemsIds) {
